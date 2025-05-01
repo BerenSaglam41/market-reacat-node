@@ -16,8 +16,11 @@ import { LockOutlined, TextFields } from "@mui/icons-material";
 import requests from "../api/ApiClient";
 import { toast } from "react-toastify";
 import { router } from "../App";
-
+import { useDispatch } from 'react-redux'
+import { addProductToState } from "../productSlice/productSlice";
+ 
 const AddProduct = () => {
+  const dispatch = useDispatch()
   const { status } = useSelector((state) => state.product);
   const {
     register,
@@ -38,16 +41,15 @@ const AddProduct = () => {
   
   
   async function handleForm(data) {
-    try{
-      await requests.products.addProduct(data)
-      .then((res)=>console.log(res));
-      toast.success("Ürün başarıyla Oluşturuldu")
-      router.navigate('api/products')
-    }
-    catch(err){
+    try {
+      const response = await requests.products.addProduct(data);      
+      dispatch(addProductToState(response.product)); // <- Redux'a ekle
+      toast.success("Ürün başarıyla Oluşturuldu");
+      router.navigate('/products');
+    } catch (err) {
       console.log(err.message);
+      toast.error("Ürün eklenirken bir hata oluştu");
     }
-
   }
   
   return (

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts, selectAllProducts } from '../productSlice/productSlice';
 import Loading from '../compoments/Loading';
+import { Grid } from '@mui/material';
+import ProductCard from '../compoments/ProductCard';
 
 
 const Products = () => {
@@ -12,14 +14,18 @@ const Products = () => {
     if(!isLoaded) dispatch(fetchProducts())
   },[isLoaded])
   if(status === "pendingFetchProducts") return <Loading/>
+  
   return (
     <>
+    <Grid container spacing={3} justifyContent='center'>
       {
-        loadedProducts.map((product)=>{
-          return <p key={product._id}>{product.name}</p>
-        })
+        loadedProducts.map((product,index)=>(
+          <Grid key={product._id || index}>
+            <ProductCard product={product}/>
+          </Grid>
+        ))
       }
-      sa
+    </Grid>
     </>
   )
 }

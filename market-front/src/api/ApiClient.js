@@ -55,7 +55,11 @@ const methods = {
 const products = {
     list : () => methods.get("api/products"),
     details : (id) => methods.get(`api/products/${id}`),
-    addProduct: (FormData) =>methods.post("api/products", FormData, {})
+    addProduct: (FormData) =>methods.post("api/products", FormData, {}),
+    addStock: (id) => methods.put(`/api/products/${id}/increase`),
+    removeStock: (id) => methods.put(`/api/products/${id}/decrease`),
+    removeAll : (id) => methods.delete(`/api/products/${id}`),
+    update: (id, data) => methods.put(`api/products/${id}`, data),
 };
 
 const account = {

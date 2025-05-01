@@ -1,5 +1,4 @@
 import {createBrowserRouter,RouterProvider } from 'react-router'
-import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
@@ -11,6 +10,9 @@ import { getUser } from './pages/account/accountSlice'
 import Loading from './compoments/Loading'
 import AddProduct from './pages/AddProduct'
 import AuthGuard from './AuthGuard/AuthGuard'
+import NotFound from './pages/errors/NotFoundError'
+import EditProduct from './pages/EditProduct'
+import MainLayout from './layouts/MainLayout'
 export const router = createBrowserRouter(
   [
     {path : '/' , 
@@ -28,8 +30,11 @@ export const router = createBrowserRouter(
         {path : "login" , element:<LoginPage/>},
         {path : "register",element:<RegisterPage/>},
         {element : <AuthGuard/>, children:[
-          {path : "add/product",element:<AddProduct/>}
-        ]}
+            {path : "add/product",element:<AddProduct/>},
+            {path : 'edit/product',element : <EditProduct/>}
+          ]
+        },
+        {path : '*',element:<NotFound/>}
       ]
     }
   ]

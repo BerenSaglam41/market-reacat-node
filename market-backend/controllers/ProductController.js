@@ -93,3 +93,29 @@ export const updateProduct = async (req, res, next) => {
         next(err);
     }
   }
+
+  export const StokArttir = async(req,res,next) => {
+    try {
+      const product = await Product.findByIdAndUpdate(
+        req.params.id,
+        { $inc: { stock: 1 } },
+        { new: true }
+      );
+      return res.json(product);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  export const StokAzalt = async(req,res,next) => {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (product.stock > 0) {
+        product.stock -= 1;
+        await product.save();
+      }
+      return res.json(product);
+    } catch (err) {
+      next(err);
+    }
+  };

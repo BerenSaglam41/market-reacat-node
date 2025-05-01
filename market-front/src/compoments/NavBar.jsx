@@ -98,6 +98,7 @@ const NavBar = () => {
                   Çıkış Yap
                 </MenuItem>
                 <MenuItem component={Link} to="/add/product">Ürün Ekle</MenuItem>
+                <MenuItem component={Link} to="/edit/product">Ürün Düzenle/Sil</MenuItem>
               </Menu>
             </>
           ) : (
