@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 import { validateProductInput, validateProductUpdate } from "../validations/ProductValidation.js";
+import mongoose from 'mongoose'
 
 export const getAll = async (req, res, nxet) => {
   try {
@@ -14,6 +15,12 @@ export const getAll = async (req, res, nxet) => {
 export const getProduct = async (req,res,next) => {
     try{
         const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+              success: false,
+              message: "Invalid product ID format.",
+            });
+          }
         const product = await Product.findById(id);
         return res.json({product})
     }   
@@ -44,7 +51,12 @@ export const addProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
     try {
       const { id } = req.params;
-  
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid product ID format.",
+        });
+      }
       const errors = await validateProductUpdate(id, req.body);
       if (Object.keys(errors).length > 0) {
         return res.status(400).json({ message: "Validation failed.", errors });
@@ -65,6 +77,12 @@ export const updateProduct = async (req, res, next) => {
   export const deleteProduct = async (req,res,next) => {
     try{
         const {id} = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+              success: false,
+              message: "Invalid product ID format.",
+            });
+          }
         const deletedProduct = await Product.findByIdAndDelete(id);
         if(!deleteProduct){
             return res.status(404).json({success : false,message : "Başvuru bulunamadı!"});

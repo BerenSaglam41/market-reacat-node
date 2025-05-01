@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import ProductRouter from "./routes/ProductRoutes.js";
+import AdminRouter from "./routes/AdminRoutes.js";
+import { createAdminUser } from "./config/createAdminUser.js";
 
 const port = 5000;
 
@@ -16,6 +18,7 @@ const corsConfig = {
   credentials: true,
 };
 
+app.use(cookieParser());
 app.use(cors(corsConfig));
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -30,6 +33,7 @@ app.use((req, res, next) => {
 
 //ROUTES
 app.use("/api/products", ProductRouter);
+app.use('/admin',AdminRouter);
 
 // Olmayan Yollar için
 app.use((req, res, next) => {
