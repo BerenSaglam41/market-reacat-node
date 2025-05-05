@@ -33,6 +33,11 @@ const ProductSchema = new mongoose.Schema({
     default: 0,
     min: 0,
   },
+  soldCount: {
+    type: Number,
+    default: 0,
+    min: 0
+  }  
 }, { timestamps: true });
 
 const Product = mongoose.model("Product", ProductSchema);

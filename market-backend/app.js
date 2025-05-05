@@ -5,7 +5,8 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import ProductRouter from "./routes/ProductRoutes.js";
 import AdminRouter from "./routes/AdminRoutes.js";
-import { createAdminUser } from "./config/createAdminUser.js";
+import UserRouter from "./routes/UserRoutes.js";
+import CartRouter from "./routes/CartRoutes.js";
 
 const port = 5000;
 
@@ -34,6 +35,8 @@ app.use((req, res, next) => {
 //ROUTES
 app.use("/api/products", ProductRouter);
 app.use('/admin',AdminRouter);
+app.use('/user',UserRouter)
+app.use('/api/cart',CartRouter);
 
 // Olmayan Yollar için
 app.use((req, res, next) => {

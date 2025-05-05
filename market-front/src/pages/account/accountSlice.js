@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { router } from "../../App";
 import requests from "../../api/ApiClient";
+import { toast } from "react-toastify";
 
 const initialState = {
     user: null,
@@ -26,14 +27,26 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
     "account/register",
     async (data, thunkAPI) => {
-        try {
-            await requests.account.register(data);
-            router.navigate('/login');
-        } catch (error) {
-            return thunkAPI.rejectWithValue({ message: error.message });
+      try {
+        const result = await requests.account.register(data);
+        
+        toast.success("Kayıt başarılı!");
+        return result;
+      } catch (error) {        
+        const errorData = error.data?.errors;
+        console.log(errorData);
+        if (errorData) {
+            Object.values(errorData).forEach(msg => toast.error(msg));
         }
+          else {
+          toast.error(errorData?.message || "Kayıt başarısız!");
+        }
+  
+        return thunkAPI.rejectWithValue(errorData); 
+      }
     }
-);
+  );
+  
 
 // GET USER (From Cookie)
 export const getUser = createAsyncThunk(
@@ -95,7 +108,7 @@ export const accountSlice = createSlice({
                 state.status = "pending";
             })
             .addCase(registerUser.fulfilled, (state) => {
-                state.status = "idle";
+                state.status = "registerSuccess";
             })
             .addCase(registerUser.rejected, (state) => {
                 state.status = "idle";

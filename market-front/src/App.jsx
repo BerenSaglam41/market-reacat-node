@@ -13,6 +13,8 @@ import AuthGuard from './AuthGuard/AuthGuard'
 import NotFound from './pages/errors/NotFoundError'
 import EditProduct from './pages/EditProduct'
 import MainLayout from './layouts/MainLayout'
+import GuestGuard from './AuthGuard/GuestGuard'
+import { getCart } from './pages/cart/cartSlice'
 export const router = createBrowserRouter(
   [
     {path : '/' , 
@@ -27,8 +29,12 @@ export const router = createBrowserRouter(
             {path : ":id",element:<ProductDetails/>}
           ]
         },
-        {path : "login" , element:<LoginPage/>},
-        {path : "register",element:<RegisterPage/>},
+        {
+          element : <GuestGuard/>, children:[
+          {path : "login" , element:<LoginPage/>},
+          {path : "register",element:<RegisterPage/>},            
+          ]
+        },
         {element : <AuthGuard/>, children:[
             {path : "add/product",element:<AddProduct/>},
             {path : 'edit/product',element : <EditProduct/>}
@@ -46,6 +52,7 @@ function App(){
 
   const initApp = async () =>{
     await dispatch(getUser())
+    await dispatch(getCart())
   }
   useEffect(()=>{
     initApp().then(()=>setLoading(false));

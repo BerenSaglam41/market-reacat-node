@@ -4,46 +4,44 @@ import { router } from '../App';
 axios.defaults.baseURL = "http://localhost:5000/";
 axios.defaults.withCredentials = true;
 
-axios.interceptors.response.use(response=>{
-    return response
-},(error)=>{
-    if(!error.response){
+axios.interceptors.response.use(
+    response => response,
+    error => {
+      if (!error.response) {
         toast.error("Sunucuya ulaşılamadı");
-        return Promise.reject("Sunucuya Ulaşılamadı");
-    }
-    const { data, status } = error.response;
-    switch (status) {
+        return Promise.reject({ message: "Sunucuya ulaşılamadı" });
+      }
+  
+      const { data, status } = error.response;
+  
+      switch (status) {
         case 400:
-            toast.error(data.message);
-            break;
         case 401:
-            toast.error(data.message);
-            break;
+          toast.error(data.message || "İstek hatalı.");
+          break;
         case 403:
-            if(data.errors){
-                const errors = [];
-                for(const key in data.errors){
-                    errors.push(data.errors[key]);
-                }
-                let result = { errors : errors , message : data.message}
-                throw result;
-            }
-            break;
+          toast.error(data.message || "Erişim reddedildi.");
+          break;
         case 404:
-            router.navigate("/errors/not-found",{
-                state : { error : data , status : status },
-            });            
-            break;
+          router.navigate("/errors/not-found", {
+            state: { error: data, status }
+          });
+          break;
         case 500:
-            router.navigate("/errors/server-error",{
-                state : { error : data , status : status },
-            });
-            break;
+          router.navigate("/errors/server-error", {
+            state: { error: data, status }
+          });
+          break;
         default:
-            break;
+          toast.error("Bilinmeyen bir hata oluştu.");
+          break;
+      }
+  
+      // ❗ Burada hata verisini `createAsyncThunk`'a aktar
+      return Promise.reject(error.response);
     }
-    return Promise.reject(error.message);
-})
+  );
+  
 
 const methods = {
     get : (url) => axios.get(url).then((response)=>response.data),
@@ -63,16 +61,23 @@ const products = {
 };
 
 const account = {
-    login : (FormData) => methods.post('admin/login',FormData),
-    register : (FormData) => methods.post('users/register',FormData),
-    getUser : () => methods.get('admin/getAdmin'),
-    logout : () => methods.post('admin/logout'),
+    login : (FormData) => methods.post('user/login',FormData),
+    register : (FormData) => methods.post('user/register', FormData), 
+    getUser : () => methods.get('user/getMe'),
+    logout : () => methods.post('user/logout')
 }
+
+const cart = {
+  get: () => methods.get("api/cart/get"),
+  addItem: (productId) => methods.post("api/cart/add", { productId }),
+  removeItem: (productId, quantity = 1) => methods.post("api/cart/remove", { productId, quantity }),
+};
 
 
 const requests = {
     products,
     account,
+    cart
 }
 
 export default requests;

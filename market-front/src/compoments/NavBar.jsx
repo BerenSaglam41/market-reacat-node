@@ -97,8 +97,18 @@ const NavBar = () => {
                 >
                   Çıkış Yap
                 </MenuItem>
-                <MenuItem component={Link} to="/add/product">Ürün Ekle</MenuItem>
-                <MenuItem component={Link} to="/edit/product">Ürün Düzenle/Sil</MenuItem>
+                {
+                  user.role == 'admin' ? (
+                    <>
+                    <MenuItem component={Link} to="/add/product">Ürün Ekle</MenuItem>
+                    <MenuItem component={Link} to="/edit/product">Ürün Düzenle/Sil</MenuItem>
+                    </>
+                  ) :
+                  (
+                    <MenuItem component={Link} to="/edit/product">Sepetim</MenuItem>
+                  ) 
+                }
+
               </Menu>
             </>
           ) : (
