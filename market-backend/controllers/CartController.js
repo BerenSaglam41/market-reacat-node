@@ -1,62 +1,70 @@
 import Cart from "../models/Cart.js";
+import Product from "../models/Product.js";
+import { formatCart } from "../config/formatCard.js";
 
-export const addToCart = async (req,res,next) => {
-    const { productId } = req.body;
-    const userId = req.user.id;
-  
-    const cart = await Cart.findOne({ user: userId });
-  
-    const existingItem = cart.items.find(
-      (item) => item.product.toString() === productId
-    );
-  
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.items.push({ product: productId, quantity: 1 });
-    }
-  
-    await cart.save();
-    res.status(200).json({cart,success:true});
-}
-
-export const getCart = async (req,res,next) => {
-    const userId = req.user.id;
-    const cart = await Cart.findOne({user:userId}).populate("items.product");
-    if(!cart) return res.status(404).json({message : "Sepet bulunamadı"});
-    res.status(200).json(cart);
-}
-
-export const ensureCartExists = async (userId) => {
-    const cart = await Cart.findOne({ user: userId });
+export const addToCart = async (req, res) => {
+  const { productId } = req.body;
+  const userId = req.user.id;
+  try {
+    let cart = await Cart.findOne({ user: userId }).populate("items.product");
     if (!cart) {
-      await Cart.create({ user: userId, items: [] });
+      cart = new Cart({
+        user: userId,
+        items: [{ product: productId, quantity: 1 }],
+      });
+    } else {
+      const existingItem = cart.items.find(item => item.product._id.toString() === productId);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.items.push({ product: productId, quantity: 1 });
+      }
     }
+    await cart.save();
+    await cart.populate("items.product");
+    res.status(200).json(formatCart(cart));
+  } catch (error) {
+    res.status(500).json({ message: "Sepete eklenirken hata oluştu", error: error.message });
+  }
 };
 
-export const removeFromCart = async (req, res) => {
-    const userId = req.user.id;
-    const { productId, quantity = 1 } = req.body;
-  
-    const cart = await Cart.findOne({ user: userId });
-  
+
+
+export const getCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.user.id }).populate("items.product");
     if (!cart) return res.status(404).json({ message: "Sepet bulunamadı" });
-  
-    const itemIndex = cart.items.findIndex((item) => item.product.toString() === productId);
-  
-    if (itemIndex === -1) {
-      return res.status(404).json({ message: "Ürün sepette bulunamadı" });
-    }
-  
-    // miktar kadar azalt
+
+    res.status(200).json(formatCart(cart));
+  } catch (error) {
+    res.status(500).json({ message: "Sunucu hatası", error: error.message });
+  }
+};
+
+
+export const removeFromCart = async (req, res) => {
+  const userId = req.user.id;
+  const { productId, quantity = 1 } = req.body;
+
+  try {
+    const cart = await Cart.findOne({ user: userId }).populate("items.product");
+    if (!cart) return res.status(404).json({ message: "Sepet bulunamadı" });
+
+    const itemIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
+    if (itemIndex === -1) return res.status(404).json({ message: "Ürün sepette bulunamadı" });
+
     if (cart.items[itemIndex].quantity > quantity) {
       cart.items[itemIndex].quantity -= quantity;
     } else {
-      // ürün miktarı yetersizse komple kaldır
       cart.items.splice(itemIndex, 1);
     }
-  
+
     await cart.save();
-    res.status(200).json(cart);
+    await cart.populate("items.product");
+
+    res.status(200).json(formatCart(cart));
+  } catch (error) {
+    res.status(500).json({ message: "Sepetten çıkarılırken sunucu hatası", error: error.message });
+  }
 };
-  
+

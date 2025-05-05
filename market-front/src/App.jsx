@@ -1,4 +1,5 @@
 import {createBrowserRouter,RouterProvider } from 'react-router'
+import Cart from './pages/cart/Cart'
 import HomePage from './pages/HomePage'
 import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
@@ -14,7 +15,8 @@ import NotFound from './pages/errors/NotFoundError'
 import EditProduct from './pages/EditProduct'
 import MainLayout from './layouts/MainLayout'
 import GuestGuard from './AuthGuard/GuestGuard'
-import { getCart } from './pages/cart/cartSlice'
+import { fetchCart } from './pages/cart/cartSlice'
+import UserGuard from './AuthGuard/UserGuard'
 export const router = createBrowserRouter(
   [
     {path : '/' , 
@@ -40,6 +42,10 @@ export const router = createBrowserRouter(
             {path : 'edit/product',element : <EditProduct/>}
           ]
         },
+        {element : <UserGuard/> , children : [
+          { path : "cart" , element : <Cart/>} 
+        ]
+        },
         {path : '*',element:<NotFound/>}
       ]
     }
@@ -52,7 +58,7 @@ function App(){
 
   const initApp = async () =>{
     await dispatch(getUser())
-    await dispatch(getCart())
+    await dispatch(fetchCart())
   }
   useEffect(()=>{
     initApp().then(()=>setLoading(false));

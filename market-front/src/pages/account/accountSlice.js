@@ -29,19 +29,16 @@ export const registerUser = createAsyncThunk(
     async (data, thunkAPI) => {
       try {
         const result = await requests.account.register(data);
-        
         toast.success("Kayıt başarılı!");
         return result;
       } catch (error) {        
         const errorData = error.data?.errors;
-        console.log(errorData);
         if (errorData) {
             Object.values(errorData).forEach(msg => toast.error(msg));
         }
           else {
           toast.error(errorData?.message || "Kayıt başarısız!");
         }
-  
         return thunkAPI.rejectWithValue(errorData); 
       }
     }

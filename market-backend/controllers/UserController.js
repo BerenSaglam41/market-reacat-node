@@ -2,7 +2,6 @@ import { ValidateUser } from "../validations/UserValidation.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";  // Kullanıcı modelin
-import { ensureCartExists } from "./CartController.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -82,7 +81,6 @@ export const login = async (req,res,next) => {
       process.env.JSON_KEY,
       {expiresIn : "1d"}
   );
-  await ensureCartExists(user.id);
   res.cookie("token", token, {
       httpOnly: true,
       sameSite: "strict",

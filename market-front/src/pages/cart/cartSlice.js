@@ -1,104 +1,112 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import requests from "../../api/ApiClient";
 import { toast } from "react-toastify";
 
+// Başlangıç durumu
 const initialState = {
   cart: null,
-  status: "idle", 
-  error: null
+  status: "idle",
+  error: null,
 };
 
-export const getCart = createAsyncThunk(
-    "carts/getCart",
-    async (_,thunkAPI) => {
-        try{
-            return await requests.cart.get()
-        }
-        catch(error){
-            return thunkAPI.rejectWithValue({message : error.message})
-        }
-    }       
-)
-
-export const fetchCart = createAsyncThunk(
-  "cart/fetch",
-  async (_, thunkAPI) => {
-    try {
-      const response = await requests.cart.get(); 
-      return response;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
-    }
+export const fetchCart = createAsyncThunk("cart/fetch", async (_, thunkAPI) => {
+  try {
+    const response = await requests.cart.get(); // API'den sepeti al
+    thunkAPI.dispatch(setCart(response.items)); // Redux state'ine kaydet    
+    localStorage.setItem("cart", JSON.stringify(response.items)); // localStorage'a da yaz
+    return response.items;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
-);
+});
 
-export const addToCart = createAsyncThunk(
-  "cart/add",
-  async (productId, thunkAPI) => {
-    try {
-      const response = await requests.cart.addItem(productId);
-      if(response.success) return toast.success(`${response.product.name} sepete eklendi!`)       
-      return response;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
-    }
+export const addToCart = createAsyncThunk("cart/add", async (productId, thunkAPI) => {
+  try {
+    const response = await requests.cart.addItem(productId);
+    toast.success(`Sepete eklendi !`);
+    thunkAPI.dispatch(setCart(response.items));
+    localStorage.setItem("cart", JSON.stringify(response.items));
+    return response.items;
+  } catch (error) {
+    toast.error("Ürün eklenemedi");
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
-);
+});
 
-export const removeFromCart = createAsyncThunk(
-  "cart/remove",
-  async ({ productId, quantity }, thunkAPI) => {
-    try {
-      const response = await requests.cart.removeItem(productId, quantity); 
-      return response;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
-    }
+export const removeFromCart = createAsyncThunk("cart/remove", async ({ productId, quantity }, thunkAPI) => {
+  try {
+    const response = await requests.cart.removeItem(productId, quantity);
+    console.log(response);
+    toast.success(`Ürün silme başarılı`);
+    thunkAPI.dispatch(setCart(response.items));
+    localStorage.setItem("cart", JSON.stringify(response.items));
+    return response.items;
+  } catch (error) {
+    toast.error("Ürün çıkarılamadı");
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
-);
+});
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    clearCart: (state) => {
-      state.cart = null;
-    },
+    // Redux içinde cart'ı doğrudan setle
     setCart: (state, action) => {
       state.cart = action.payload;
+      localStorage.setItem("cart", JSON.stringify(action.payload)); // localStorage'a da yaz
+    },
+    // Sepeti temizle
+    clearCart: (state) => {
+      state.cart = null;
+      localStorage.removeItem("cart");
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCart.fulfilled, (state, action) => {
+    builder
+      // fetchCart
+      .addCase(fetchCart.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
         state.cart = action.payload;
-        state.status = "success";
+        state.status = "succeeded";
+        state.error = null;
       })
       .addCase(fetchCart.rejected, (state, action) => {
-        state.status = "error";
+        state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(addToCart.pending, (state, action) => {
+
+      // addToCart
+      .addCase(addToCart.pending, (state) => {
         state.status = "loading";
-        state.loadingIds.push(action.meta.arg);  
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.cart = action.payload;
-        state.status = "idle";
+        state.status = "succeeded";
+        state.error = null;
       })
-      .addCase(addToCart.rejected, (state,) => {
-        state.status = "idle";
+      .addCase(addToCart.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+
+      // removeFromCart
+      .addCase(removeFromCart.pending, (state) => {
+        state.status = "loading";
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.cart = action.payload;
-        state.status = "success";
+        state.status = "succeeded";
+        state.error = null;
       })
       .addCase(removeFromCart.rejected, (state, action) => {
-        state.status = "error";
+        state.status = "failed";
         state.error = action.payload;
       });
   },
 });
 
-export const { clearCart, setCart } = cartSlice.actions;
-
-export default cartSlice.reducer;
+export const { setCart, clearCart } = cartSlice.actions;
+export default cartSlice.reducer

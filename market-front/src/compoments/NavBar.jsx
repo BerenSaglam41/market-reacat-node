@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../pages/account/accountSlice.js';
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { useState } from 'react';
+import Loading from './Loading.jsx';
 
 const links = [
   { title: 'Home', to: '/' },
@@ -88,28 +89,31 @@ const NavBar = () => {
                   onClick={() => {
                     if (status !== 'pending') {
                       dispatch(logoutThunk())
-                        .then(()=>{
+                        .then(() => {
                           window.location.href = '/login';
-                        })
+                        });
                       handleClose();
                     }
                   }}
                 >
                   Çıkış Yap
                 </MenuItem>
-                {
-                  user.role == 'admin' ? (
-                    <>
-                    <MenuItem component={Link} to="/add/product">Ürün Ekle</MenuItem>
-                    <MenuItem component={Link} to="/edit/product">Ürün Düzenle/Sil</MenuItem>
-                    </>
-                  ) :
-                  (
-                    <MenuItem component={Link} to="/edit/product">Sepetim</MenuItem>
-                  ) 
-                }
-
+                {user.role === "admin" ? (
+                  [
+                    <MenuItem key="add-product" component={Link} to="/add/product">
+                      Ürün Ekle
+                    </MenuItem>,
+                    <MenuItem key="edit-product" component={Link} to="/edit/product">
+                      Ürün Düzenle/Sil
+                    </MenuItem>,
+                  ]
+                ) : (
+                  <MenuItem component={Link} to="/cart">
+                    Sepetim
+                  </MenuItem>
+                )}
               </Menu>
+
             </>
           ) : (
             authLinks.map((link) => (

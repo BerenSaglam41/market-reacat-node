@@ -13,7 +13,6 @@ export default function AuthGuard() {
   if (user.role !== "admin") {
     return <Navigate to="/" />
   }
-
   // Adminse erişime izin ver
   return <Outlet />
 }
