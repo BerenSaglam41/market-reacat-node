@@ -63,6 +63,8 @@ const products = {
 
 const orders = {
   createOrder : (FormData) => methods.post("/order/add",FormData),
+  getOrders : () => methods.get("order/get"),
+  removeOrder : (id) =>methods.delete(`order/${id}`)
 }
 
 const account = {
