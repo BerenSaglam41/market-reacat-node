@@ -28,13 +28,13 @@ const PopularProducts = () => {
       <Typography variant="h4" gutterBottom>
         En Çok Sepete Eklenen Ürünler
       </Typography>
-      <Grid container sx={{ml:20}} spacing={3}>
-        {popularProducts.map((product) => (
-          <Grid columnSpan={{ xs: 12, sm: 6 }} key={product._id}>
-            <ProductCard product={product} />
-          </Grid>
-        ))}
-      </Grid>
+      <Grid container spacing={2}>
+  {popularProducts.map((product) => (
+    <Grid  key={product._id} sx={{ ml:17,flexBasis: { xs: '100%', sm: '50%', md: '25%' }, maxWidth: { xs: '100%', sm: '50%', md: '10%' } }}>
+      <ProductCard product={product} />
+    </Grid>
+  ))}
+</Grid>
     </Paper>
   );
 };

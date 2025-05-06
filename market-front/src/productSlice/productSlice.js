@@ -1,7 +1,6 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import Product from "../../../market-backend/models/Product";
 import requests from "../api/ApiClient";
-
+import { createSelector } from "reselect";
 
 export const fetchProducts = createAsyncThunk(
     "product/fetchProducts",
@@ -53,14 +52,8 @@ export const decreaseStock = createAsyncThunk(
     }
   );
   
-  export const selectTopSoldProducts = (state, count = 4) => {
-    const allProducts = selectAllProducts(state);
-    return allProducts
-      .filter(p => typeof p.soldCount === "number")
-      .sort((a, b) => b.soldCount - a.soldCount)
-      .slice(0, count);
-  };
 
+  
 const productAdapter = createEntityAdapter({
     selectId: (product) => product._id
   });
@@ -156,3 +149,13 @@ export const {
     selectTotal: selectTotalProducts,
 } = productAdapter.getSelectors((state) => state.product);
 export const {addProductToState} = productSlice.actions;
+
+  
+export const selectTopSoldProducts = createSelector(
+  [selectAllProducts, (_, count) => count],
+  (allProducts, count) =>
+    allProducts
+      .filter(p => typeof p.soldCount === "number")
+      .sort((a, b) => b.soldCount - a.soldCount)
+      .slice(0, count)
+);

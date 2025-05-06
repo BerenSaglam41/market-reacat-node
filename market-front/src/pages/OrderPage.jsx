@@ -12,21 +12,30 @@ const OrderPage = () => {
     async function fetchOrders() {
       try {
         const response = await requests.orders.getOrders();
-        setOrders(response);
+  
+        if (Array.isArray(response)) {
+          setOrders(response); 
+        } else if (Array.isArray(response.orders)) {
+          setOrders(response.orders);
+        } else {
+          setOrders([]); 
+        }
+  
       } catch (err) {
-        setError("Siparişler yüklenemedi");
         console.error(err);
+        setError("Siparişler yüklenemedi.");
       } finally {
         setLoading(false);
       }
     }
-
+  
     fetchOrders();
   }, []);
+  
 
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
-  if (orders.length === 0) return <Typography>Sipariş geçmişiniz boş.</Typography>;
+  if (!orders || orders.length === 0) return <Typography>Sipariş geçmişiniz boş.</Typography>;
 
   return (
     <Box sx={{ mt: 4 }}>
@@ -34,7 +43,11 @@ const OrderPage = () => {
         Siparişlerim
       </Typography>
       {orders.map((order) => (
-        <OrderCard key={order._id} order={order} onDelete={(id)=> setOrders(prev => prev.filter(o => o._id !== id))} />
+        <OrderCard
+          key={order._id}
+          order={order}
+          onDelete={(id) => setOrders((prev) => prev.filter((o) => o._id !== id))}
+        />
       ))}
     </Box>
   );

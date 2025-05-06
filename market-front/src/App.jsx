@@ -7,7 +7,6 @@ import LoginPage from './pages/account/LoginPage'
 import RegisterPage from './pages/account/RegisterPage'
 import { useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
-import { getUser } from './pages/account/accountSlice'
 import Loading from './compoments/Loading'
 import AddProduct from './pages/AddProduct'
 import AuthGuard from './AuthGuard/AuthGuard'
@@ -19,6 +18,7 @@ import { fetchCart } from './pages/cart/cartSlice'
 import UserGuard from './AuthGuard/UserGuard'
 import CheckOut from './pages/CheckOut/CheckOut'
 import OrderPage from './pages/OrderPage'
+import { getUser } from './pages/account/accountSlice'
 
 export const router = createBrowserRouter(
   [
