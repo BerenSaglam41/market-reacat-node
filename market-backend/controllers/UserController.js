@@ -106,7 +106,7 @@ export const verifyUser = async (req,res,next) =>{
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JSON_KEY);
+    const decoded = jwt.verify(token, process.env.JSON_KEY);    
     req.user = decoded;
     next();
   } catch (err) {

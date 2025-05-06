@@ -16,17 +16,17 @@ const Review = () => {
             <Typography
                 gutterBottom
             >
-                {getValues("city")} {getValues("district")}
+                Şehir / İlçe : {getValues("city")} {getValues("district")}
             </Typography>
             <Typography
                 gutterBottom
             >
-                {getValues("phone")}
+                Numara : {getValues("phone")}
             </Typography>
             <Typography
                 gutterBottom
             >
-                {getValues("adress")} {getValues("city")}
+                Adress / Şehir : {getValues("adress")} {getValues("city")}
             </Typography>
         </Box>
             <Typography
@@ -38,17 +38,17 @@ const Review = () => {
             <Typography
                 gutterBottom
             >
-                {getValues("cartname")}
+                Kart İsmi : {getValues("cartname")}
             </Typography>
             <Typography
                 gutterBottom
             >
-                {getValues("cartnumber")}
+                Kart Numarası : {getValues("cartnumber")}
             </Typography>
             <Typography
                 gutterBottom
             >
-                {getValues("expirydate")}
+                Son Geçerlilik Tarihi : {getValues("expirydate")}
             </Typography>
     </Stack>
   )

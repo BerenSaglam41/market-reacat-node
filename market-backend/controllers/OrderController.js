@@ -67,7 +67,7 @@ export const getOrders = async (req, res) => {
     const orders = await Order.find({ user: userId });
 
     if (!orders || orders.length === 0) {
-      return res.status(404).json({ message: "Siparişiniz bulunmamakta." });
+      return res.status(200).json({ message: "Siparişiniz bulunmamakta." });
     }
 
     res.status(200).json(orders);

@@ -30,7 +30,7 @@ const PopularProducts = () => {
       </Typography>
       <Grid container sx={{ml:20}} spacing={3}>
         {popularProducts.map((product) => (
-          <Grid item xs={12} sm={6} md={3} key={product._id}>
+          <Grid columnSpan={{ xs: 12, sm: 6 }} key={product._id}>
             <ProductCard product={product} />
           </Grid>
         ))}

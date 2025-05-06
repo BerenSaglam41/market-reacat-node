@@ -98,6 +98,12 @@ const NavBar = () => {
                 >
                   Çıkış Yap
                 </MenuItem>
+                <MenuItem component={Link} to="/cart">
+                    Sepetim
+                  </MenuItem>
+                  <MenuItem component={Link} to="/order">
+                    Siparişlerim
+                  </MenuItem>
                 {user.role === "admin" ? (
                   [
                     <MenuItem key="add-product" component={Link} to="/add/product">
@@ -108,15 +114,9 @@ const NavBar = () => {
                     </MenuItem>,
                   ]
                 ) : (
-                  <>
-                  </>
+                  null
                 )}
-                  <MenuItem component={Link} to="/cart">
-                    Sepetim
-                  </MenuItem>
-                  <MenuItem component={Link} to="/order">
-                    Siparişlerim
-                  </MenuItem>
+
               </Menu>
 
             </>
