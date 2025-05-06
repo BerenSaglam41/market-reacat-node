@@ -32,6 +32,7 @@ const AddProduct = () => {
       name: "",
       price: "",
       description: "",
+      image : "",
       brand: "",
       stock: "",
       category: "", 
@@ -42,15 +43,22 @@ const AddProduct = () => {
   
   async function handleForm(data) {
     try {
-      const response = await requests.products.addProduct(data);      
-      dispatch(addProductToState(response.product)); // <- Redux'a ekle
+      const formData = new FormData();
+      for (let key in data) {
+        if (data[key]) {
+          formData.append(key, data[key]);
+        }
+      }
+      const response = await requests.products.addProduct(formData);
+      dispatch(addProductToState(response.product));
       toast.success("Ürün başarıyla Oluşturuldu");
-      router.navigate('/products');
+      router.navigate("/products");
     } catch (err) {
       console.log(err.message);
       toast.error("Ürün eklenirken bir hata oluştu");
     }
   }
+  
   
   return (
     <div>
@@ -110,17 +118,24 @@ const AddProduct = () => {
               error={!!errors.description}
               helperText={errors.description?.message}
             />
-            <TextField
-              {...register("image", 
+            <Controller
+              name="image"
+              control={control}
+              defaultValue={null}
+              render={({ field }) => (
+                <input
+                  type="file"
+                  accept=".jpg,.png,.jpeg"
+                  onChange={(e) => field.onChange(e.target.files[0])}
+                  style={{ marginBottom: "1rem" }}
+                />
               )}
-              type="text"
-              size="small"
-              label="Image alanı(.jpg,.png,.pneg)"
-              fullWidth
-              sx={{ mb: 2 }}
-              error={!!errors.image}
-              helperText={errors.image?.message}
             />
+            {errors.image && (
+              <p style={{ color: "red", fontSize: "0.8rem" }}>
+                {errors.image.message}
+              </p>
+            )}
             <Controller
               name="category"
               control={control}

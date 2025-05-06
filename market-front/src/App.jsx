@@ -17,6 +17,9 @@ import MainLayout from './layouts/MainLayout'
 import GuestGuard from './AuthGuard/GuestGuard'
 import { fetchCart } from './pages/cart/cartSlice'
 import UserGuard from './AuthGuard/UserGuard'
+import CheckOut from './pages/CheckOut/CheckOut'
+import OrderPage from './pages/OrderPage'
+
 export const router = createBrowserRouter(
   [
     {path : '/' , 
@@ -43,7 +46,9 @@ export const router = createBrowserRouter(
           ]
         },
         {element : <UserGuard/> , children : [
-          { path : "cart" , element : <Cart/>} 
+          { path : "cart" , element : <Cart/>},
+          { path: "checkout" , element : <CheckOut/>},
+          { path: "order" , element : <OrderPage/>}
         ]
         },
         {path : '*',element:<NotFound/>}

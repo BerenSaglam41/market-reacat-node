@@ -7,6 +7,7 @@ import ProductRouter from "./routes/ProductRoutes.js";
 import AdminRouter from "./routes/AdminRoutes.js";
 import UserRouter from "./routes/UserRoutes.js";
 import CartRouter from "./routes/CartRoutes.js";
+import OrderRouter from "./routes/OrderRoutes.js";
 
 const port = 5000;
 
@@ -32,7 +33,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/uploads', express.static('uploads'));
+
 //ROUTES
+app.use('/order',OrderRouter)
 app.use("/api/products", ProductRouter);
 app.use('/admin',AdminRouter);
 app.use('/user',UserRouter)

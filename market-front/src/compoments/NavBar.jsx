@@ -108,10 +108,15 @@ const NavBar = () => {
                     </MenuItem>,
                   ]
                 ) : (
+                  <>
+                  </>
+                )}
                   <MenuItem component={Link} to="/cart">
                     Sepetim
                   </MenuItem>
-                )}
+                  <MenuItem component={Link} to="/order">
+                    Siparişlerim
+                  </MenuItem>
               </Menu>
 
             </>

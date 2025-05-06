@@ -15,6 +15,24 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "user", // normal kullanıcı
     enum: ["user", "admin"],
+  },
+  address: {
+    address: {
+      type: String,
+      required: false,
+    },
+    city: {
+      type: String,
+      required: false,
+    },
+    district: {
+      type: String,
+      required: false,
+    },
+    phone: {
+      type: String,
+      required: false,
+    },
   }
 }, { timestamps: true });
 

@@ -58,7 +58,12 @@ const products = {
     removeStock: (id) => methods.put(`/api/products/${id}/decrease`),
     removeAll : (id) => methods.delete(`/api/products/${id}`),
     update: (id, data) => methods.put(`api/products/${id}`, data),
+    popular : () => methods.get('/api/products/popular'),
 };
+
+const orders = {
+  createOrder : (FormData) => methods.post("/order/add",FormData),
+}
 
 const account = {
     login : (FormData) => methods.post('user/login',FormData),
@@ -77,7 +82,8 @@ const cart = {
 const requests = {
     products,
     account,
-    cart
+    cart,
+    orders
 }
 
 export default requests;

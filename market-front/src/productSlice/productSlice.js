@@ -53,6 +53,13 @@ export const decreaseStock = createAsyncThunk(
     }
   );
   
+  export const selectTopSoldProducts = (state, count = 4) => {
+    const allProducts = selectAllProducts(state);
+    return allProducts
+      .filter(p => typeof p.soldCount === "number")
+      .sort((a, b) => b.soldCount - a.soldCount)
+      .slice(0, count);
+  };
 
 const productAdapter = createEntityAdapter({
     selectId: (product) => product._id

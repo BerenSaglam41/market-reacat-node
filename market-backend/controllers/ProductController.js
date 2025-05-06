@@ -31,22 +31,34 @@ export const getProduct = async (req,res,next) => {
 
 export const addProduct = async (req, res, next) => {
   try {
-    const errors = await validateProductInput(req.body);
+    const { name, price, brand, category, description } = req.body;
 
+    const errors = await validateProductInput(req.body);
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({ message: "Validation failed.", errors });
     }
 
-    const newProduct = new Product(req.body);
+    const image = req.file?.filename; 
+
+    const newProduct = new Product({
+      name,
+      price,
+      brand,
+      category,
+      description,
+      image  
+    });
+
     await newProduct.save();
 
     return res
       .status(201)
-      .json({ message: "Product saved.", product: newProduct });
+      .json({ message: "Ürün kaydedildi.", product: newProduct });
   } catch (err) {
     next(err);
   }
 };
+
 
 export const updateProduct = async (req, res, next) => {
     try {
@@ -119,3 +131,26 @@ export const updateProduct = async (req, res, next) => {
       next(err);
     }
   };
+
+
+  export const getPopularProducts = async (req, res) => {
+    try {
+      const allProducts = await Product.find();
+  
+      if (allProducts.length <= 4) {
+        return res.status(200).json(allProducts);
+      }
+  
+      const topProducts = await Product.find()
+        .sort({ soldCount: -1 })
+        .limit(4);
+  
+      res.status(200).json(topProducts);
+    } catch (error) {
+      res.status(500).json({
+        message: "Popüler ürünler alınamadı",
+        error: error.message,
+      });
+    }
+  };
+  

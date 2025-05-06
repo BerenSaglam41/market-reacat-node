@@ -55,10 +55,10 @@ const Cart = () => {
               <TableRow key={item.productId}>
                 <TableCell>
                   <img
-                    src={item.image}
+                    src={`http://localhost:5000/uploads/${item.image}`}
                     alt={item.name}
                     style={{
-                      width: "100%",
+                      width: "64",
                       height: 64,
                       objectFit: "cover",
                       borderRadius: 8,

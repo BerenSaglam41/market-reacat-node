@@ -36,7 +36,6 @@ export const addToCart = createAsyncThunk("cart/add", async (productId, thunkAPI
 export const removeFromCart = createAsyncThunk("cart/remove", async ({ productId, quantity }, thunkAPI) => {
   try {
     const response = await requests.cart.removeItem(productId, quantity);
-    console.log(response);
     toast.success(`Ürün silme başarılı`);
     thunkAPI.dispatch(setCart(response.items));
     localStorage.setItem("cart", JSON.stringify(response.items));
