@@ -1,14 +1,15 @@
 import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
+import Product from '../models/Product.js'
 
 export const createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
     const { address,cartInfo } = req.body;
 
-    // Adres alanlarının kontrolü
     const requiredFieldsAddress = ["address", "city", "district", "phone"];
     const requiredFieldsCartInfo = ["cartname", "cartnumber", "expirydate", "cvv"];
+  
     for (const field of requiredFieldsAddress) {
       if (!address[field]) {
         return res.status(400).json({ message: `Adres alanı eksik: ${field}` });
@@ -19,13 +20,23 @@ export const createOrder = async (req, res) => {
         return res.status(400).json({ message: `Cart alanı eksik: ${field}` });
       }
     }
-    const cart = await Cart.findOne({ user: userId }).populate("items.product");
 
+    const cart = await Cart.findOne({ user: userId }).populate("items.product");
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: "Sepetiniz boş." });
     }
+    for (const item of cart.items) {
+      const product = await Product.findById(item.product._id);
+      if (!product) {
+        return res.status(404).json({ message: `Ürün bulunamadı: ${item.product.name}` });
+      }
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ message: `Yetersiz stok: ${product.name}` });
+      }
+      product.stock -= item.quantity;
+      await product.save();
+    }
 
-    // Ürünleri ayıkla
     const items = cart.items.map((item) => ({
       productId: item.product._id,
       name: item.product.name,
@@ -45,7 +56,6 @@ export const createOrder = async (req, res) => {
 
     await newOrder.save();
 
-    // Sepeti temizle
     cart.items = [];
     await cart.save();
 

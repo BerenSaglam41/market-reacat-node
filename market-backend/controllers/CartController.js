@@ -29,15 +29,21 @@ export const addToCart = async (req, res) => {
       const existingItem = cart.items.find(
         item => item.product._id.toString() === productId
       );
-
+      
       if (existingItem) {
+        if (existingItem.quantity + 1 > product.stock) {
+          return res.status(400).json({ message: "Yetersiz stok. Daha fazla eklenemez." });
+        }
         existingItem.quantity += 1;
       } else {
+        if (product.stock < 1) {
+          return res.status(400).json({ message: "Ürün stokta yok." });
+        }
         cart.items.push({ product: productId, quantity: 1 });
         product.soldCount = (product.soldCount || 0) + 1;
       }
     }
-
+    
     await Promise.all([cart.save(), product.save()]);
     await cart.populate("items.product");
 
