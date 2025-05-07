@@ -1,72 +1,114 @@
-import { Grid, TextField } from '@mui/material'
-import React from 'react'
-import { useFormContext } from 'react-hook-form'
+import { Grid, TextField, MenuItem, Select, FormControl, InputLabel, FormHelperText } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { getAddresses } from "../account/accountSlice";
 
 const AdressForm = () => {
-  const {register,formState : {errors}} = useFormContext()
+  const dispatch = useDispatch();
+  const { register, formState: { errors }, setValue } = useFormContext();
+  
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState("");
+
+  useEffect(() => {
+    dispatch(getAddresses()).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        setAddresses(res.payload);
+      }
+    });
+  }, [dispatch]);
+
+  // Adres seçildiğinde formu güncelleme
+  const handleAddressChange = (e) => {
+    const selectedId = e.target.value;
+    setSelectedAddress(selectedId);
+
+    // Seçilen adresin verilerini bul
+    const selected = addresses.find((address) => address._id === selectedId);
+
+    if (selected) {
+      // React Hook Form kullanarak formu güncelle
+      setValue("city", selected.city);
+      setValue("district", selected.district);
+      setValue("phone", selected.phone);
+      setValue("address", selected.address); // Burada `address` verisini güncelliyoruz
+    }
+  };
+
   return (
     <Grid container spacing={3}>
-      <Grid size={{xs:12,md:6}}>
+      {/* Adres Seçimi */}
+      <Grid item xs={12} md={6}>
+        <FormControl fullWidth error={!!errors.address}>
+          <InputLabel id="address-select-label">Adres Seçin</InputLabel>
+          <Select
+            labelId="address-select-label"
+            {...register("address", { required: "Adres seçmek zorunludur." })}
+            value={selectedAddress}
+            onChange={handleAddressChange}
+            label="Adres Seçin"
+            sx={{ mb: 2 }}
+          >
+            {addresses.map((addr) => (
+              <MenuItem key={addr._id} value={addr._id}>
+                {addr.address} - {addr.city} / {addr.district}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.address && <FormHelperText>{errors.address.message}</FormHelperText>}
+        </FormControl>
+      </Grid>
+
+      {/* Adres Detayları */}
+      <Grid item xs={12} md={6}>
         <TextField
-        {
-          ...register("city",{
-            required : "City Zorunlu Alan",
-          })
-        }
-          label = "Enter city"
-          size='small'
+          {...register("city", { required: "Şehir Zorunlu Alan" })}
+          label="Şehir"
+          size="small"
           fullWidth
-          autoFocus
-          sx={{mb:2}}
+          sx={{ mb: 2 }}
           error={!!errors.city}
+          slotProps={{ inputLabel: { shrink: true } }} // Label'ı yukarıda tutmak için
         />
       </Grid>
-      <Grid size={{xs:12,md:6}}>
+      <Grid item xs={12} md={6}>
         <TextField
-        {
-          ...register("district",{
-            required : "District Zorunlu Alan",
-          })
-        }
-          label = "Enter District"
-          size='small'
+          {...register("district", { required: "İlçe Zorunlu Alan" })}
+          label="İlçe"
+          size="small"
           fullWidth
-          sx={{mb:2}}
+          sx={{ mb: 2 }}
           error={!!errors.district}
+          slotProps={{ inputLabel: { shrink: true } }} // Label'ı yukarıda tutmak için
         />
       </Grid>
-      <Grid size={{xs:12,md:6}}>
+      <Grid item xs={12} md={6}>
         <TextField
-        {
-          ...register("phone",{
-            required : "Phone Zorunlu Alan",
-          })
-        }
-          label = "Enter phone"
-          size='small'
+          {...register("phone", { required: "Telefon Zorunlu Alan" })}
+          label="Telefon"
+          size="small"
           fullWidth
-          sx={{mb:2}}
+          sx={{ mb: 2 }}
           error={!!errors.phone}
+          slotProps={{ inputLabel: { shrink: true } }} // Label'ı yukarıda tutmak için
         />
       </Grid>
-      <Grid size={{xs:12,md:6}}>
+      <Grid item xs={12} md={6}>
         <TextField
-        {
-          ...register("adress",{
-            required : "Adress Zorunlu Alan",
-          })
-        }
-          label = "Enter adress"
-          size='small'
+          {...register("address", { required: "Adres Zorunlu Alan" })}
+          label="Adres"
+          size="small"
           fullWidth
           multiline
           rows={3}
-          sx={{mb:2}}
-          error={!!errors.adress}
+          sx={{ mb: 2 }}
+          error={!!errors.address}
+          slotProps={{ inputLabel: { shrink: true } }} // Label'ı yukarıda tutmak için
         />
       </Grid>
     </Grid>
-  )
-}
+  );
+};
 
-export default AdressForm
+export default AdressForm;

@@ -19,6 +19,7 @@ import UserGuard from './AuthGuard/UserGuard'
 import CheckOut from './pages/CheckOut/CheckOut'
 import OrderPage from './pages/OrderPage'
 import { getUser } from './pages/account/accountSlice'
+import AccountPage from './compoments/AccountPage'
 
 export const router = createBrowserRouter(
   [
@@ -48,7 +49,8 @@ export const router = createBrowserRouter(
         {element : <UserGuard/> , children : [
           { path : "cart" , element : <Cart/>},
           { path: "checkout" , element : <CheckOut/>},
-          { path: "order" , element : <OrderPage/>}
+          { path: "order" , element : <OrderPage/>},
+          { path:"my-account" , element:<AccountPage/>}
         ]
         },
         {path : '*',element:<NotFound/>}

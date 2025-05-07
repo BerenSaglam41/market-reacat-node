@@ -44,7 +44,7 @@ const CheckOut = () => {
       try{
       const payload = {
         address: {
-          address: data.adress,
+          address: data.address,
           city: data.city,
           district: data.district,
           phone: data.phone

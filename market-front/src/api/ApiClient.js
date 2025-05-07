@@ -74,7 +74,12 @@ const account = {
     login : (FormData) => methods.post('user/login',FormData),
     register : (FormData) => methods.post('user/register', FormData), 
     getUser : () => methods.get('user/getMe'),
-    logout : () => methods.post('user/logout')
+    updateUser : (FormData) => methods.put('user',FormData),
+    logout : () => methods.post('user/logout'),
+    addAddress: (formData) => methods.post('user/address', formData),
+    deleteAdress : (id) => methods.delete(`user/address/${id}`),
+    updateAddress : (id,FormData) => methods.put(`user/address/${id}`,FormData),
+    getAddressses : () => methods.get('user/address')
 }
 
 const cart = {

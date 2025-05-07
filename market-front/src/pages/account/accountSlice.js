@@ -43,7 +43,6 @@ export const registerUser = createAsyncThunk(
     }
   );
   
-
 // GET USER (From Cookie)
 export const getUser = createAsyncThunk(
     "account/getUser",
@@ -64,6 +63,21 @@ export const getUser = createAsyncThunk(
     }
 );
 
+export const updateUser = createAsyncThunk(
+    'account/updateUser',
+    async (userData, thunkAPI) => {
+      try {        
+        const response = await requests.account.updateUser(userData); // PUT /user/update
+        console.log(response);
+        
+        return response.data;
+      } catch (error) {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  );
+  
+
 // LOGOUT (Thunk ile async)
 export const logoutThunk = createAsyncThunk(
     "account/logoutThunk",
@@ -78,6 +92,62 @@ export const logoutThunk = createAsyncThunk(
     }
 );
 
+// Adres ekleme işlemi
+export const addAddress = createAsyncThunk(
+    'account/addAddress',
+    async (addressData, thunkAPI) => {
+        try {
+            console.log(addressData);
+            const response = await requests.account.addAddress(addressData); 
+            console.log(response);
+            
+            return response.data; // Yeni adresi döndür
+        } catch (error) {
+            return thunkAPI.rejectWithValue({ message: error.message });
+        }
+    }
+);
+
+// Adres güncelleme işlemi
+export const updateAddress = createAsyncThunk(
+    'account/updateAddress',
+    async ({ addressId, addressData }, thunkAPI) => {
+      try {
+        // Sadece id URL'de, data body'de
+        const response = await requests.account.updateAddress(addressId, addressData);
+        return response;
+      } catch (error) {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  );
+  
+
+// Adres silme işlemi
+export const deleteAddress = createAsyncThunk(
+    'account/deleteAddress',
+    async (addressId, thunkAPI) => {
+        try {
+            await requests.account.deleteAdress(addressId); // Adres silme
+            return addressId; // Silinen adresin id'si
+        } catch (error) {
+            return thunkAPI.rejectWithValue({ message: error.message });
+        }
+    }
+);
+
+export const getAddresses = createAsyncThunk(
+    'account/getAddresses',
+    async (_, thunkAPI) => {
+      try {
+        const response = await requests.account.getAddressses();         
+        return response; // adres listesini döndür
+      } catch (error) {
+        return thunkAPI.rejectWithValue({ message: error.message });
+      }
+    }
+  );
+  
 // Slice
 export const accountSlice = createSlice({
     name: "account",
@@ -128,7 +198,34 @@ export const accountSlice = createSlice({
             })
             .addCase(logoutThunk.rejected, (state) => {
                 state.status = "idle";
-            });
+            })
+            .addCase(getAddresses.fulfilled, (state, action) => {
+                if (state.user) {
+                    state.user.addresses = action.payload;
+                }
+            })
+            .addCase(addAddress.fulfilled, (state, action) => {
+                if (state.user && Array.isArray(state.user.addresses)) {
+                    state.user.addresses.push(action.payload);
+                }
+            })
+            .addCase(updateAddress.fulfilled, (state, action) => {
+                if (state.user && Array.isArray(state.user.addresses)) {
+                    const index = state.user.addresses.findIndex(addr => addr._id === action.payload._id);
+                    if (index !== -1) {
+                        state.user.addresses[index] = action.payload;
+                    }
+                }
+            })
+            .addCase(deleteAddress.fulfilled, (state, action) => {
+                if (state.user && Array.isArray(state.user.addresses)) {
+                    state.user.addresses = state.user.addresses.filter(addr => addr._id !== action.payload);
+                }
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.user = action.payload;
+              })
+              
     }
 });
 

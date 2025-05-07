@@ -14,8 +14,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "../pages/account/accountSlice.js";
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { useState } from "react";
-import Loading from "./Loading.jsx";
+import { useState } from "react";;
 
 const links = [
   { title: "Home", to: "/" },
@@ -42,6 +41,7 @@ const NavBar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   return (
     <AppBar position="static" sx={{ backgroundColor: "#87CEFA" }}>
       <Toolbar>
@@ -97,6 +97,11 @@ const NavBar = () => {
                 open={open}
                 onClose={handleClose}
               >
+                <MenuItem
+                  component={Link} to="/my-account"
+                >
+                  Hesabım
+                </MenuItem>
                 <MenuItem
                   onClick={() => {
                     if (status !== "pending") {
