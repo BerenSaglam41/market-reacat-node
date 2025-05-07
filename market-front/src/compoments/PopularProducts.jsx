@@ -18,13 +18,13 @@ const PopularProducts = () => {
   const { status, isLoaded } = useSelector((state) => state.product);
 
   useEffect(() => {
-    if (!isLoaded) dispatch(fetchProducts());
-  }, [isLoaded, dispatch]);
+   dispatch(fetchProducts());
+  }, [dispatch]); 
 
   if (status === 'pendingFetchProducts') return <Loading />;
 
   return (
-    <Paper elevation={3} sx={{ mt: 5, p: 4 }}>
+    <Paper elevation={3} sx={{ mt: 15, p: 4 }}>
       <Typography variant="h4" gutterBottom>
         En Çok Sepete Eklenen Ürünler
       </Typography>

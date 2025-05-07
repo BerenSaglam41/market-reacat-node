@@ -22,7 +22,7 @@ const LoginPage = () => {
 <div>
       <Container maxWidth='xs'>
           <Paper sx={{padding : 2}} elevation={3}>
-            <Avatar sx={{mx:'auto',mb:2,color:'secondary.main'}}>
+            <Avatar sx={{mx:'auto',mb:2,color:'87CEFA'}}>
               <LockOutlined />
             </Avatar>
             <Typography component='h1' variant='h5' sx={{textAlign:'center',mb:2}}>

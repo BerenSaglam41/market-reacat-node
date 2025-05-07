@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { router } from "../../App";
 import requests from "../../api/ApiClient";
 import { toast } from "react-toastify";
-
 const initialState = {
     user: null,
     status: "idle"

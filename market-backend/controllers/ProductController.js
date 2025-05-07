@@ -2,9 +2,27 @@ import Product from "../models/Product.js";
 import { validateProductInput, validateProductUpdate } from "../validations/ProductValidation.js";
 import mongoose from 'mongoose'
 
-export const getAll = async (req, res, nxet) => {
+export const getAll = async (req, res, next) => {
   try {
-    const products = await Product.find();
+    const { category, minPrice, maxPrice, name } = req.query;
+    const filter = {};
+    
+    if (category) {
+      filter.category = category;
+    }
+    
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+    
+    if (name) {
+      filter.name = { $regex: name, $options: 'i' }; 
+    }
+    
+    const products = await Product.find(filter);
+    
     return res.json({ products });
   } catch (err) {
     next(err);

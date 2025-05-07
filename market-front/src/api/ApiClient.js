@@ -42,7 +42,10 @@ axios.interceptors.response.use(
     }
   );
   
-
+  const instance = axios.create({
+    baseURL: "http://localhost:5000/api",
+  });
+  
 const methods = {
     get : (url) => axios.get(url).then((response)=>response.data),
     post : (url,body) => axios.post(url,body).then((response)=>response.data),
@@ -51,7 +54,7 @@ const methods = {
 };
 
 const products = {
-    list : () => methods.get("api/products"),
+    list: (query) => instance.get("/products", { params: query }),
     details : (id) => methods.get(`api/products/${id}`),
     addProduct: (FormData) =>methods.post("api/products", FormData, {}),
     addStock: (id) => methods.put(`/api/products/${id}/increase`),

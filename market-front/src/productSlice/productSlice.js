@@ -3,13 +3,14 @@ import requests from "../api/ApiClient";
 import { createSelector } from "reselect";
 
 export const fetchProducts = createAsyncThunk(
-    "product/fetchProducts",
-    async () => {
-      const res = await requests.products.list();
-      return res.products;
-    }
-  );
-  
+  "product/fetchProducts",
+  async (filter) => {
+    const res = await requests.products.list(filter);     
+    return res.data.products;
+  }
+);
+
+
 
 export const fetchProductById = createAsyncThunk(
     "product/fetchProductById",
