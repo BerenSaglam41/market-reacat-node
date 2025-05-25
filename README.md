@@ -73,4 +73,4 @@ npm run dev
    - `VITE_API_BASE_URL`
 
 ## 📧 İletişim
-Geliştirici: [GitHub kullanıcı adınız]
+Geliştirici: [Berensaglam41]
