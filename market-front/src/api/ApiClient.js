@@ -38,25 +38,35 @@ axios.interceptors.response.use(
       }
   
       const { data, status } = error.response;
+      const currentPath = window.location.pathname;
   
       switch (status) {
         case 400:
-          toast.error(data.message || "Geçersiz istek");
+          // Sadece önemli 400 hatalarında toast göster
+          if (data.message && !data.message.includes('Sepet') && !data.message.includes('Cart')) {
+            toast.error(data.message || "Geçersiz istek");
+          }
           break;
         case 401:
-          toast.error(data.message || "Oturum açmanız gerekiyor");
-          // Auto redirect to login if needed
-          if (window.location.pathname !== '/login') {
-            router.navigate('/login');
+          // Sadece login sayfasında değilse ve önemli API'lerde toast göster
+          if (currentPath !== '/login' && currentPath !== '/register') {
+            // Sessiz fail yapalım, UserGuard zaten yönlendirme yapacak
+            console.log('🔒 Authentication required for:', error.config?.url);
           }
           break;
         case 403:
-          toast.error(data.message || "Bu işlem için yetkiniz yok");
+          // 403 hatalarını sadece önemli işlemlerde gösterelim
+          if (error.config?.method === 'POST' || error.config?.method === 'PUT' || error.config?.method === 'DELETE') {
+            toast.error("Bu işlem için yetkiniz yok");
+          }
           break;
         case 404:
           // API 404'ü sayfa 404'ünden ayır
           if (error.config?.url?.includes('/api/')) {
-            toast.error("İstenen veri bulunamadı");
+            // Sadece kritik API'lerde toast göster
+            if (error.config?.method === 'POST' || error.config?.method === 'PUT') {
+              toast.error("İstenen kaynak bulunamadı");
+            }
           } else {
             router.navigate("/errors/not-found", {
               state: { error: data, status }
@@ -70,7 +80,10 @@ axios.interceptors.response.use(
           });
           break;
         default:
-          toast.error("Bilinmeyen bir hata oluştu");
+          // Sadece beklenmeyen hatalar için toast
+          if (status >= 500) {
+            toast.error("Bilinmeyen bir hata oluştu");
+          }
           break;
       }
   

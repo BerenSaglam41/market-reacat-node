@@ -23,6 +23,7 @@ import AccountPage from './compoments/AccountPage'
 import DebugPage from './pages/DebugPage'
 import ApiTestPage from './pages/ApiTestPage'
 import Products from './pages/Products'
+import DataInspector from './pages/DataInspector'
 
 // Simple Error Fallback Component (react-error-boundary olmadan)
 function ErrorFallback({error, resetErrorBoundary}) {
@@ -117,6 +118,10 @@ export const router = createBrowserRouter(
           element: <ApiTestPage />
         },
         {
+          path: "data-inspector",
+          element: <DataInspector />
+        },
+        {
           path: "errors/not-found",
           element: <NotFound />
         },
@@ -146,8 +151,18 @@ function App() {
   const initApp = async () => {
     try {
       console.log('🚀 App initialization started');
-      await dispatch(getUser());
-      await dispatch(fetchCart());
+      
+      // Önce kullanıcı bilgilerini yükle
+      const userResult = await dispatch(getUser());
+      
+      // Eğer kullanıcı varsa cart'ı yükle
+      if (userResult.payload) {
+        console.log('📋 Loading cart for authenticated user');
+        await dispatch(fetchCart());
+      } else {
+        console.log('👥 Guest user - skipping cart load');
+      }
+      
       console.log('✅ App initialization completed');
     } catch (error) {
       console.error('❌ App initialization failed:', error);

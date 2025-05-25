@@ -105,9 +105,8 @@ const NavBar = () => {
                 <MenuItem
                   onClick={() => {
                     if (status !== "pending") {
-                      dispatch(logoutThunk()).then(() => {
-                        window.location.href = "/login";
-                      });
+                      console.log('🚪 User initiated logout');
+                      dispatch(logoutThunk());
                       handleClose();
                     }
                   }}

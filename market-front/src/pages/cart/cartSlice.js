@@ -16,6 +16,8 @@ export const fetchCart = createAsyncThunk("cart/fetch", async (_, thunkAPI) => {
     localStorage.setItem("cart", JSON.stringify(response.items)); // localStorage'a da yaz
     return response.items;
   } catch (error) {
+    // Sessiz fail - 401/403 hatalarını log'da tut ama toast gösterme
+    console.log('📞 Cart fetch error (normal for guests):', error.response?.status);
     return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
 });
@@ -103,6 +105,15 @@ const cartSlice = createSlice({
       .addCase(removeFromCart.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      
+      // Logout durumunda cart'ı temizle
+      .addCase('account/logoutThunk/fulfilled', (state) => {
+        console.log('📋 Cart cleared on logout');
+        state.cart = null;
+        state.status = "idle";
+        state.error = null;
+        localStorage.removeItem("cart");
       });
   },
 });

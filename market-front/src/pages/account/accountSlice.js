@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { router } from "../../App";
 import requests from "../../api/ApiClient";
 import { toast } from "react-toastify";
+import { clearAllUserData, clearReduxStore } from "../../utils/logoutUtils";
+
 const initialState = {
     user: null,
     status: "idle"
@@ -50,8 +52,10 @@ export const getUser = createAsyncThunk(
         try {
             const user = await requests.account.getUser();
             thunkAPI.dispatch(setUser(user));
+            console.log('👤 User authenticated:', user.email || user.username);
             return user;
         } catch (error) {
+            console.log('👥 No authenticated user (guest)');
             return thunkAPI.rejectWithValue({
                 message: error.response?.data?.message || error.message
             });
@@ -79,10 +83,33 @@ export const logoutThunk = createAsyncThunk(
     "account/logoutThunk",
     async (_, thunkAPI) => {
         try {
-            await requests.account.logout(); // HttpOnly çerez temizlenir
-            localStorage.removeItem("user");
-            thunkAPI.dispatch(logout()); // Reducer'dan user null yapılır
+            console.log('🚪 Logout process started');
+            
+            // 1. Backend'e logout request gönder (HttpOnly çerez temizlenir)
+            try {
+                await requests.account.logout();
+                console.log('✅ Backend logout successful');
+            } catch (backendError) {
+                console.warn('⚠️ Backend logout failed, continuing with local cleanup:', backendError.message);
+            }
+            
+            // 2. Tüm local data temizle
+            clearAllUserData();
+            
+            // 3. Redux store'u temizle
+            clearReduxStore(thunkAPI.dispatch);
+            
+            console.log('✅ Complete logout process finished');
+            
+            return { success: true, message: 'Logout successful' };
+            
         } catch (error) {
+            console.error('❌ Logout error:', error);
+            
+            // Hata olsa bile tüm veriyi temizle (güvenlik)
+            clearAllUserData();
+            clearReduxStore(thunkAPI.dispatch);
+            
             return thunkAPI.rejectWithValue({ message: error.message });
         }
     }
@@ -151,6 +178,14 @@ export const accountSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             state.user = action.payload;
+        },
+        logout: (state) => {
+            state.user = null;
+            state.status = "idle";
+        },
+        clearUserData: (state) => {
+            state.user = null;
+            state.status = "idle";
         }
     },
     extraReducers: (builder) => {
@@ -196,7 +231,12 @@ export const accountSlice = createSlice({
             .addCase(logoutThunk.fulfilled, (state) => {
                 state.status = "idle";
                 state.user = null;
-                router.navigate('/login', { replace: true });
+                // Success toast göster
+                toast.success("Başarıyla çıkış yaptınız");
+                // Ana sayfaya yönlendir
+                setTimeout(() => {
+                    router.navigate('/', { replace: true });
+                }, 1000);
             })
             .addCase(logoutThunk.rejected, (state) => {
                 state.status = "idle";
@@ -231,4 +271,4 @@ export const accountSlice = createSlice({
     }
 });
 
-export const { setUser, logout } = accountSlice.actions;
+export const { setUser, logout, clearUserData } = accountSlice.actions;
