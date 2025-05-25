@@ -1,7 +1,7 @@
+import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import Cart from './pages/cart/Cart'
 import HomePage from './pages/HomePage'
-import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
 import LoginPage from './pages/account/LoginPage'
 import RegisterPage from './pages/account/RegisterPage'
@@ -20,18 +20,53 @@ import CheckOut from './pages/CheckOut/CheckOut'
 import OrderPage from './pages/OrderPage'
 import { getUser } from './pages/account/accountSlice'
 import AccountPage from './compoments/AccountPage'
-import { ErrorBoundary } from 'react-error-boundary'
 import DebugPage from './pages/DebugPage'
+import ApiTestPage from './pages/ApiTestPage'
+import Products from './pages/Products'
 
-// Error Fallback Component
+// Simple Error Fallback Component (react-error-boundary olmadan)
 function ErrorFallback({error, resetErrorBoundary}) {
   return (
-    <div role="alert" style={{ padding: '20px', textAlign: 'center' }}>
+    <div role="alert" style={{ padding: '20px', textAlign: 'center', border: '1px solid red' }}>
       <h2>Bir şeyler yanlış gitti!</h2>
-      <pre style={{ color: 'red' }}>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Tekrar Dene</button>
+      <pre style={{ color: 'red', fontSize: '14px' }}>{error?.message}</pre>
+      <button onClick={resetErrorBoundary} style={{ marginTop: '10px', padding: '8px 16px' }}>
+        Sayfayı Yenile
+      </button>
     </div>
   )
+}
+
+// Simple Error Boundary Class Component
+class SimpleErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('React Error Boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <ErrorFallback 
+          error={this.state.error} 
+          resetErrorBoundary={() => {
+            this.setState({ hasError: false, error: null });
+            window.location.reload();
+          }} 
+        />
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 export const router = createBrowserRouter(
@@ -78,6 +113,10 @@ export const router = createBrowserRouter(
           element: <DebugPage />
         },
         {
+          path: "api-test",
+          element: <ApiTestPage />
+        },
+        {
           path: "errors/not-found",
           element: <NotFound />
         },
@@ -90,9 +129,12 @@ export const router = createBrowserRouter(
     }
   ],
   {
+    basename: '/', // Vercel için basename ekle
     future: {
       v7_normalizeFormMethod: true,
-      v7_partialHydration: true
+      v7_partialHydration: true,
+      v7_fetcherPersist: true,
+      v7_relativeSplatPath: true
     }
   }
 )
@@ -119,14 +161,9 @@ function App() {
   if (loading) return <Loading />;
 
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onError={(error, errorInfo) => {
-        console.error('React Error Boundary:', error, errorInfo);
-      }}
-    >
+    <SimpleErrorBoundary>
       <RouterProvider router={router} />
-    </ErrorBoundary>
+    </SimpleErrorBoundary>
   );
 }
 

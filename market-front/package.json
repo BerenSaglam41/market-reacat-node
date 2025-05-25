@@ -22,7 +22,6 @@
     "query-string": "^9.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.56.2",
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",

@@ -17,7 +17,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false, // Vercel için sourcemap'i kapat
     rollupOptions: {
       output: {
         manualChunks: {
@@ -27,9 +27,14 @@ export default defineConfig({
           utils: ['axios', 'react-redux', '@reduxjs/toolkit']
         }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000
   },
   define: {
-    'process.env': {}
-  }
+    'process.env': {},
+    global: 'globalThis'
+  },
+  // Vercel için özel ayarlar
+  base: '/',
+  publicDir: 'public'
 })
