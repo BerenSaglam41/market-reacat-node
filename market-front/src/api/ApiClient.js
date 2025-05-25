@@ -1,8 +1,20 @@
 import axios from 'axios'
 import { toast } from 'react-toastify';
 import { router } from '../App';
+
+// Debug: Environment variable kontrolü
+console.log('🔍 VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
+console.log('🔍 All env vars:', import.meta.env);
+
 const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-axios.defaults.baseURL = baseURL;
+
+// Debug: Base URL kontrolü
+console.log('🚀 Final baseURL:', baseURL);
+
+// URL düzeltmesi - https:// yoksa ekle
+const cleanBaseURL = baseURL.startsWith('http') ? baseURL : `https://${baseURL}`;
+console.log('✅ Clean baseURL:', cleanBaseURL);
+axios.defaults.baseURL = cleanBaseURL;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(
@@ -44,7 +56,7 @@ axios.interceptors.response.use(
   );
   
   const instance = axios.create({
-    baseURL: `${baseURL}/api`,
+    baseURL: `${cleanBaseURL}/api`,
   });
   
 const methods = {
