@@ -103,27 +103,27 @@ const products = {
 };
 
 const orders = {
-  createOrder : (FormData) => methods.post("/order/add",FormData),
-  getOrders : () => methods.get("order/get"),
-  removeOrder : (id) =>methods.delete(`order/${id}`)
+  createOrder : (FormData) => axios.post("/order/add", FormData).then((response)=>response.data),
+  getOrders : () => axios.get("order/get").then((response)=>response.data),
+  removeOrder : (id) => axios.delete(`order/${id}`).then((response)=>response.data)
 }
 
 const account = {
-    login : (FormData) => methods.post('user/login',FormData),
-    register : (FormData) => methods.post('user/register', FormData), 
-    getUser : () => methods.get('user/getMe'),
-    updateUser : (FormData) => methods.put('user',FormData),
-    logout : () => methods.post('user/logout'),
-    addAddress: (formData) => methods.post('user/address', formData),
-    deleteAdress : (id) => methods.delete(`user/address/${id}`),
-    updateAddress : (id,FormData) => methods.put(`user/address/${id}`,FormData),
-    getAddressses : () => methods.get('user/address')
+    login : (FormData) => axios.post('user/login', FormData).then((response)=>response.data),
+    register : (FormData) => axios.post('user/register', FormData).then((response)=>response.data), 
+    getUser : () => axios.get('user/getMe').then((response)=>response.data),
+    updateUser : (FormData) => axios.put('user', FormData).then((response)=>response.data),
+    logout : () => axios.post('user/logout').then((response)=>response.data),
+    addAddress: (formData) => axios.post('user/address', formData).then((response)=>response.data),
+    deleteAdress : (id) => axios.delete(`user/address/${id}`).then((response)=>response.data),
+    updateAddress : (id,FormData) => axios.put(`user/address/${id}`, FormData).then((response)=>response.data),
+    getAddressses : () => axios.get('user/address').then((response)=>response.data)
 }
 
 const cart = {
-  get: () => methods.get("api/cart/get"),
-  addItem: (productId) => methods.post("api/cart/add", { productId }),
-  removeItem: (productId, quantity = 1) => methods.post("api/cart/remove", { productId, quantity }),
+  get: () => axios.get("api/cart/get").then((response)=>response.data),
+  addItem: (productId) => axios.post("api/cart/add", { productId }).then((response)=>response.data),
+  removeItem: (productId, quantity = 1) => axios.post("api/cart/remove", { productId, quantity }).then((response)=>response.data),
 };
 
 

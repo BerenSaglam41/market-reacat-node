@@ -4,6 +4,12 @@ import Product from '../models/Product.js'
 
 export const createOrder = async (req, res) => {
   try {
+    console.log('📦 CreateOrder API called:', {
+      userId: req.user?.id,
+      body: req.body,
+      headers: req.headers.authorization ? 'present' : 'missing'
+    });
+    
     const userId = req.user.id;
     const { address,cartInfo } = req.body;
 

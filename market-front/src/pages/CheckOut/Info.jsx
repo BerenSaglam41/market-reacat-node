@@ -30,7 +30,7 @@ const Info = () => {
             <ListItemAvatar>
               <Avatar 
                 variant='square' 
-                src={`http://localhost:5000/uploads/${item.image}`}
+                src={item.image ? `${import.meta.env.VITE_API_BASE_URL || 'https://market-reacat-node-production.up.railway.app'}/uploads/${item.image}` : '/placeholder.png'}
               >
               </Avatar>
             </ListItemAvatar>
