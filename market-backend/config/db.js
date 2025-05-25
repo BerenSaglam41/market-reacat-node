@@ -7,7 +7,15 @@ const connectDB = async () =>{
     mongoose.connection.on('connected', () => {
         console.log("✅ Database Connected Successfully!");
     });
-    await mongoose.connect(`${process.env.MONGODB_URL}`)
+    
+    const options = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000,
+        socketTimeoutMS: 45000,
+    };
+    
+    await mongoose.connect(`${process.env.MONGODB_URL}`, options);
 };
 
 export default connectDB 
