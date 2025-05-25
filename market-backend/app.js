@@ -11,6 +11,9 @@ import OrderRouter from "./routes/OrderRoutes.js";
 
 const port = process.env.PORT || 5000;
 
+console.log('🚀 Port:', port);
+console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+
 const app = express();
 
 await connectDB();
@@ -60,6 +63,7 @@ app.use((error, req, res, next) => {
 });
 
 //SERVER
-app.listen(port, () => {
-  console.log(`API http://localhost:${port} üzerinde çalışıyor.`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`API http://0.0.0.0:${port} üzerinde çalışıyor.`);
+  console.log(`Railway Domain: https://market-reacat-node-production.up.railway.app`);
 });

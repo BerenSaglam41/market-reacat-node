@@ -4,18 +4,14 @@ dotenv.config()
 
 // function to connect to the mongodb 
 const connectDB = async () =>{
+    console.log('🔗 MongoDB URL:', process.env.MONGODB_URL); // Debug log
+    
     mongoose.connection.on('connected', () => {
         console.log("✅ Database Connected Successfully!");
     });
     
-    const options = {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 30000,
-        socketTimeoutMS: 45000,
-    };
-    
-    await mongoose.connect(`${process.env.MONGODB_URL}`, options);
+    // Modern connection (deprecated options removed)
+    await mongoose.connect(`${process.env.MONGODB_URL}`);
 };
 
 export default connectDB 
