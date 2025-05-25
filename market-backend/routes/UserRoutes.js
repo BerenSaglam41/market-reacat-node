@@ -1,20 +1,30 @@
-import express from 'express'
-import { addAddress, deleteAddress, getAddresses, getMe, getUser, getUserMiddleware, login, logout, registerUser, updateAddress, updateUser, verifyUser } from '../controllers/UserController.js';
+import express from 'express';
+import { 
+  addAddress, 
+  deleteAddress, 
+  getAddresses, 
+  getMe, 
+  login, 
+  logout, 
+  registerUser, 
+  updateAddress, 
+  updateUser, 
+  verifyUser 
+} from '../controllers/UserController.js';
 
 const userRouter = express.Router();
 
+// Auth routes
 userRouter.post("/register", registerUser);
-userRouter.put("/", verifyUser, updateUser);
 userRouter.post('/login', login);
 userRouter.post("/logout", logout);
+userRouter.get('/getMe', getMe);
 
-// İki farklı endpoint
-userRouter.get('/getMe', getMe); // Direct response
-userRouter.get('/getUser', getUserMiddleware, getUser); // Middleware + response
-
+// Protected routes  
+userRouter.put("/", verifyUser, updateUser);
 userRouter.post('/address', verifyUser, addAddress);
+userRouter.get('/address', verifyUser, getAddresses);
 userRouter.put('/address/:addressId', verifyUser, updateAddress);
 userRouter.delete('/address/:addressId', verifyUser, deleteAddress);
-userRouter.get('/address', verifyUser, getAddresses);
 
-export default userRouter
+export default userRouter;

@@ -1,14 +1,13 @@
 import { ValidateUser } from "../validations/UserValidation.js";
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 
 export const updateUser = async (req, res, next) => {
   try {
-    const userId = req.user.id; // JWT'den gelen kullanıcı ID
+    const userId = req.user.id;
     const updateData = {};
     
-    // Sadece gelen alanları güncelle
     if (req.body.username) updateData.username = req.body.username;
     if (req.body.email) updateData.email = req.body.email;
     if (req.body.phone) updateData.phone = req.body.phone;
@@ -25,7 +24,7 @@ export const updateUser = async (req, res, next) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    next(error); // Express error handler
+    next(error);
   }
 };
 
@@ -38,7 +37,6 @@ export const registerUser = async (req, res, next) => {
     }
 
     const { username, email, password } = req.body;
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -62,30 +60,19 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-// Middleware olarak kullanılacak
-export const getUserMiddleware = async (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(403).json({ message: "Token Eksik" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JSON_KEY);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    next(err);
-  }
-};
-
-// Direct endpoint olarak kullanılacak  
 export const getMe = async (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: "Token eksik" });
-
   try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "Token eksik" });
+    }
+
     const decoded = jwt.verify(token, process.env.JSON_KEY);
     const user = await User.findById(decoded.id).select("username role email phone");
 
-    if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+    if (!user) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+    }
 
     res.status(200).json(user);
   } catch (err) {
@@ -93,136 +80,146 @@ export const getMe = async (req, res, next) => {
   }
 };
 
-export const getUser = async (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: "Token eksik" });
-
+export const login = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JSON_KEY);
-    const user = await User.findById(decoded.id).select("username role email phone");
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ message: "Username ve password gerekli!" });
+    }
 
-    if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ message: "Kullanıcı Bulunamadı!" });
+    }
 
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(401).json({ message: "Token geçersiz", expired: true });
-  }
-};
-
-export const login = async (req,res,next) => {
-  const { username,password} = req.body;
-  const user = await User.findOne({username});
-  if(!user){
-      return res.status(401).json({message: "Kullanıcı Bulunamadı!"});
-  }
-  const isMatch = await bcrypt.compare(password,user.password);
-  if(!isMatch){
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(401).json({ message: "Şifre Hatalı!" }); 
-  }
-  const token = jwt.sign(
-      {id : user._id,username:user.username,role:user.role},
+    }
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username, role: user.role },
       process.env.JSON_KEY,
-      {expiresIn : "1d"}
-  );
-  res.cookie("token", token, {
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("token", token, {
       httpOnly: true,
       sameSite: "strict",
       maxAge: 1000 * 60 * 60 * 24, // 1 gün
-  });
-  return res.json({ success: true, username: user.username,role:user.role });
-}
+    });
 
-export const logout = async (req,res,next) =>{
-  res.clearCookie("token",{
-      httpOnly : true,
-      sameSite : "strict",
-      secure : false
-  });
-  res.json({message : "Çıkış  Yapıldı"})
-}
-
-export const verifyUser = async (req,res,next) =>{
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ message: 'Erişim reddedildi. Token eksik.' });
+    return res.json({ 
+      success: true, 
+      username: user.username, 
+      role: user.role 
+    });
+  } catch (error) {
+    next(error);
   }
+};
 
+export const logout = async (req, res, next) => {
   try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: false
+    });
+    res.json({ message: "Çıkış Yapıldı" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyUser = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ message: 'Erişim reddedildi. Token eksik.' });
+    }
+
     const decoded = jwt.verify(token, process.env.JSON_KEY);    
     req.user = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Geçersiz token.' });
   }
-}
+};
 
-// Add Address
-export const addAddress = async (req, res) => {
-  const userId = req.user.id;
-  const { address, city, district, phone } = req.body;
-
+// Address Management
+export const addAddress = async (req, res, next) => {
   try {
-    
-      const user = await User.findById(userId);
-      if (!user) return res.status(404).json({ message: "User not found" });
+    const userId = req.user.id;
+    const { address, city, district, phone } = req.body;
 
-      const newAddress = {
-          address, city, district, phone
-      };
-      user.addresses.push(newAddress);
-      await user.save();
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      res.status(201).json(newAddress);
+    const newAddress = { address, city, district, phone };
+    user.addresses.push(newAddress);
+    await user.save();
+
+    res.status(201).json(newAddress);
   } catch (err) {
-      res.status(500).json({ message: "Error adding address", error: err.message });
+    next(err);
   }
 };
 
-// Update Address
-export const updateAddress = async (req, res) => {
-  const { addressId } = req.params;
-  const { address, city, district, phone } = req.body;
-
+export const updateAddress = async (req, res, next) => {
   try {
-      const user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({ message: "User not found" });
+    const { addressId } = req.params;
+    const { address, city, district, phone } = req.body;
 
-      const addressIndex = user.addresses.findIndex(item => item._id.toString() === addressId);
-      if (addressIndex === -1) return res.status(404).json({ message: "Address not found" });
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      user.addresses[addressIndex] = { address, city, district, phone };
-      await user.save();
+    const addressIndex = user.addresses.findIndex(item => item._id.toString() === addressId);
+    if (addressIndex === -1) {
+      return res.status(404).json({ message: "Address not found" });
+    }
 
-      res.status(200).json(user.addresses[addressIndex]);
+    user.addresses[addressIndex] = { address, city, district, phone };
+    await user.save();
+
+    res.status(200).json(user.addresses[addressIndex]);
   } catch (err) {
-      res.status(500).json({ message: "Error updating address", error: err.message });
+    next(err);
   }
 };
 
-// Delete Address
-export const deleteAddress = async (req, res) => {
-  const { addressId } = req.params;
-
+export const deleteAddress = async (req, res, next) => {
   try {
-      const user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({ message: "User not found" });
+    const { addressId } = req.params;
 
-      const addressIndex = user.addresses.findIndex(item => item._id.toString() === addressId);
-      if (addressIndex === -1) return res.status(404).json({ message: "Address not found" });
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      user.addresses.splice(addressIndex, 1);
-      await user.save();
+    const addressIndex = user.addresses.findIndex(item => item._id.toString() === addressId);
+    if (addressIndex === -1) {
+      return res.status(404).json({ message: "Address not found" });
+    }
 
-      res.status(200).json({ message: "Address deleted successfully" });
+    user.addresses.splice(addressIndex, 1);
+    await user.save();
+
+    res.status(200).json({ message: "Address deleted successfully" });
   } catch (err) {
-      res.status(500).json({ message: "Error deleting address", error: err.message });
+    next(err);
   }
 };
 
 export const getAddresses = async (req, res, next) => {
   try {
-    const userId = req.user.id; // veya req.user.id, senin kullanımına göre
+    const userId = req.user.id;
     const user = await User.findById(userId).populate("addresses");
       
     if (!user) {
@@ -231,6 +228,6 @@ export const getAddresses = async (req, res, next) => {
 
     res.status(200).json(user.addresses);
   } catch (error) {
-    next(error); // Express error handler'a gönder
+    next(error);
   }
 };

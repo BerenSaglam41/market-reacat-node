@@ -2,12 +2,16 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import ProductRouter from "./routes/ProductRoutes.js";
 import AdminRouter from "./routes/AdminRoutes.js";
 import UserRouter from "./routes/UserRoutes.js";
 import CartRouter from "./routes/CartRoutes.js";
 import OrderRouter from "./routes/OrderRoutes.js";
+
+// Load environment variables
+dotenv.config();
 
 const port = process.env.PORT || 5000;
 
@@ -17,41 +21,39 @@ console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
 
 const app = express();
 
-// Connect to database
+// Connect to database first
 await connectDB();
 
-// Simple CORS - Express 4.x compatible
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
+// CORS Configuration - Simple and compatible
+const corsOptions = {
+  origin: true, // Allow all origins for now
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
+};
 
-// Basic middlewares
+// Apply middlewares in correct order
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use('/uploads', express.static('uploads'));
 
-// Root route
+// Root route for testing
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Market Backend API is running! 🚀',
-    version: 'Express 4.x',
+    version: 'Express 4.x + Clean Setup',
     routes: {
       products: '/api/products',
       users: '/user',
       cart: '/api/cart',
-      orders: '/order'
+      orders: '/order',
+      admin: '/admin'
     },
-    status: 'Running with manual CORS'
+    status: 'Backend çalışıyor ve veritabanı bağlı!'
   });
 });
 
@@ -73,12 +75,21 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
   const status = error.status || 500;
   const message = error.message || "Something went wrong.";
-  res.status(status).json({ message, error: error.message });
+  
+  console.error('Error:', error);
+  
+  res.status(status).json({ 
+    success: false,
+    message, 
+    error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+  });
 });
 
 // Start Server
 app.listen(port, () => {
   console.log(`🚀 Express 4.x server running on port: ${port}`);
-  console.log(`🌍 API: https://market-reacat-node-production.up.railway.app`);
-  console.log('✅ Manual CORS enabled');
+  console.log(`🌍 API URL: https://market-reacat-node-production.up.railway.app`);
+  console.log('✅ CORS enabled for all origins');
 });
+
+export default app;
