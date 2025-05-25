@@ -20,42 +20,10 @@ const app = express();
 await connectDB();
 
 const corsConfig = {
-  origin: function (origin, callback) {
-    // Allowed origins
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
-      'http://localhost:3000',
-      'https://localhost:3000',
-      'https://market-reacat-node.vercel.app'
-    ].filter(Boolean);
-    
-    console.log('📍 Request Origin:', origin);
-    console.log('📝 Allowed Origins:', allowedOrigins);
-    
-    // Allow requests with no origin (mobile apps, postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    // Check if origin is allowed
-    if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
-      console.log('✅ Origin allowed:', origin);
-      return callback(null, true);
-    }
-    
-    console.log('❌ Origin blocked:', origin);
-    return callback(new Error('Not allowed by CORS'));
-  },
+  origin: true, // Geçici olarak tüm origin'lere izin (debug için)
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization',
-    'Cache-Control',
-    'X-Access-Token'
-  ],
-  exposedHeaders: ['set-cookie'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
 };
 
