@@ -11,33 +11,43 @@ import OrderRouter from "./routes/OrderRoutes.js";
 
 const port = process.env.PORT || 5000;
 
-console.log('🚀 Port:', port);
-console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+console.log('🚀 Starting server...');
 console.log('🔗 FRONTEND_URL:', process.env.FRONTEND_URL);
+console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
 
 const app = express();
 
+// Connect to database
 await connectDB();
 
-const corsConfig = {
-  origin: true, // Geçici olarak tüm origin'lere izin (debug için)
+// CORS Configuration - EN ÖNCESİNDE OLMALI
+const corsOptions = {
+  origin: true, // TÜM ORIGIN'LERE İZİN - DEBUG İÇİN
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With', 
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cache-Control',
+    'X-Access-Token'
+  ],
   optionsSuccessStatus: 200
 };
 
+// Apply CORS before other middlewares
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Other middlewares
 app.use(cookieParser());
-app.use(cors(corsConfig));
 app.use(bodyParser.json());
 app.use(express.static("public"));
-
-// CORS is handled by cors middleware above
-
 app.use('/uploads', express.static('uploads'));
-
-// Handle preflight OPTIONS requests
-app.options('*', cors(corsConfig));
 
 // Root route for testing
 app.get('/', (req, res) => {
@@ -49,25 +59,26 @@ app.get('/', (req, res) => {
       cart: '/api/cart',
       orders: '/order'
     },
+    cors: 'Enabled for all origins',
     status: 'Backend çalışıyor ve veritabanı bağlı!'
   });
 });
 
-//ROUTES
-app.use('/order',OrderRouter)
+// API Routes
+app.use('/order', OrderRouter);
 app.use("/api/products", ProductRouter);
-app.use('/admin',AdminRouter);
-app.use('/user',UserRouter)
-app.use('/api/cart',CartRouter);
+app.use('/admin', AdminRouter);
+app.use('/user', UserRouter);
+app.use('/api/cart', CartRouter);
 
-// Olmayan Yollar için
+// 404 Handler
 app.use((req, res, next) => {
   const error = new Error("Route not found.");
   error.status = 404;
   next(error); 
 });
 
-// HATA yakalama
+// Error Handler
 app.use((error, req, res, next) => {
   const status = error.status || 500;
   const message = error.message || "Something went wrong.";
@@ -76,9 +87,10 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message, details, errors });
 });
 
-//SERVER
+// Start Server
 app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 API Server running on port: ${port}`);
   console.log(`🌍 Railway Domain: https://market-reacat-node-production.up.railway.app`);
   console.log(`📦 API Base URL: https://market-reacat-node-production.up.railway.app/api`);
+  console.log('✅ CORS enabled for frontend');
 });
