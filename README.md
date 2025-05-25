@@ -42,13 +42,6 @@ Modern full-stack e-commerce uygulaması. React + Node.js + MongoDB ile gelişti
 **Backend**: Node.js, Express, MongoDB, JWT, bcrypt  
 **Deployment**: Vercel (Frontend) + Railway (Backend)
 
-## Test Kullanıcıları 👤
-
-Sistemi test etmek için:
-- **Admin**: `admin/admin123`
-- **User**: `user/user123`
-- **Guest**: Kayıt olmadan da test edebilirsiniz
-
 ---
 
 ⭐ **Modern e-commerce solution with complete security!** ⭐
