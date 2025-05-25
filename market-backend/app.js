@@ -39,6 +39,20 @@ app.use((req, res, next) => {
 
 app.use('/uploads', express.static('uploads'));
 
+// Root route for testing
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Market Backend API is running! 🚀',
+    routes: {
+      products: '/api/products',
+      users: '/user',
+      cart: '/api/cart',
+      orders: '/order'
+    },
+    status: 'Backend çalışıyor ve veritabanı bağlı!'
+  });
+});
+
 //ROUTES
 app.use('/order',OrderRouter)
 app.use("/api/products", ProductRouter);
