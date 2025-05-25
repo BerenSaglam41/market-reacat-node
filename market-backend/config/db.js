@@ -8,6 +8,8 @@ const connectDB = async () =>{
     
     mongoose.connection.on('connected', () => {
         console.log("✅ Database Connected Successfully!");
+        console.log('📋 Database Name:', mongoose.connection.name);
+        console.log('🗺️ Host:', mongoose.connection.host);
     });
     
     // Modern connection (deprecated options removed)

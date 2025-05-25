@@ -19,7 +19,12 @@ const app = express();
 await connectDB();
 
 const corsConfig = {
-  origin: true, // Geçici olarak tüm origin'lere izin
+  origin: [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'https://localhost:3000',
+    /\.vercel\.app$/
+  ],
   credentials: true,
 };
 
