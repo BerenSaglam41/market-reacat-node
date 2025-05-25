@@ -16,9 +16,17 @@ export const fetchCart = createAsyncThunk("cart/fetch", async (_, thunkAPI) => {
     localStorage.setItem("cart", JSON.stringify(response.items)); // localStorage'a da yaz
     return response.items;
   } catch (error) {
-    // Sessiz fail - 401/403 hatalarını log'da tut ama toast gösterme
-    console.log('📞 Cart fetch error (normal for guests):', error.response?.status);
-    return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    // Guest kullanıcılar için normal - sessiz fail
+    console.log('📋 Cart fetch: Guest user or auth required');
+    
+    // Cart state'ini temiz tut
+    thunkAPI.dispatch(setCart(null));
+    localStorage.removeItem("cart");
+    
+    return thunkAPI.rejectWithValue({
+      message: 'Authentication required for cart',
+      code: error.response?.status || 'UNKNOWN'
+    });
   }
 });
 

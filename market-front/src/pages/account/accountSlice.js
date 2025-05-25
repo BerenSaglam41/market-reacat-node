@@ -52,12 +52,19 @@ export const getUser = createAsyncThunk(
         try {
             const user = await requests.account.getUser();
             thunkAPI.dispatch(setUser(user));
-            console.log('👤 User authenticated:', user.email || user.username);
+            console.log('👤 User authenticated successfully');
             return user;
         } catch (error) {
-            console.log('👥 No authenticated user (guest)');
+            // Guest kullanıcı - normal durum, hata değil
+            console.log('👥 Guest user - no authentication cookie');
+            
+            // State'i temizle
+            thunkAPI.dispatch(setUser(null));
+            localStorage.removeItem("user");
+            
             return thunkAPI.rejectWithValue({
-                message: error.response?.data?.message || error.message
+                message: 'No authenticated user',
+                code: error.response?.status || 'GUEST'
             });
         }
     }

@@ -1,76 +1,54 @@
-# Market React-Node E-ticaret Uygulaması
+# Market React Node - E-Commerce Platform
 
-Modern teknolojilerle geliştirilmiş tam kapsamlı e-ticaret uygulaması.
+📱 **Live Demo**: https://market-reacat-node.vercel.app/  
+🔧 **Backend API**: https://market-reacat-node-production.up.railway.app/
 
-## 🚀 Demo Links
-- **Frontend**: [Buraya Vercel linki gelecek]
-- **Backend API**: [Buraya Railway linki gelecek]
+Modern full-stack e-commerce uygulaması. React + Node.js + MongoDB ile geliştirilmiştir.
 
-## 🛠️ Teknolojiler
+## Son Güncellemeler ✨
 
-### Frontend
-- React 19
-- Material-UI
-- Redux Toolkit
-- React Router
-- Vite
-- Axios
+### 🔐 Logout Güvenlik Sistemi - TAMAMEN DÜZELTİLDİ
+- ✅ **Tüm localStorage temizleniyor** (user, cart, orders, addresses, payment vb.)
+- ✅ **SessionStorage tamamen temizleniyor**
+- ✅ **Cookies temizleniyor** (auth, session tokens)
+- ✅ **Redux store sıfırlanıyor** (account, cart, orders)
+- ✅ **Pattern-based cleanup** (user*, order*, cart* vb. tüm ilgili veriler)
+- ✅ **OrderPage component cleanup** (logout'ta sipariş bilgileri otomatik temizleniyor)
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- JWT Authentication
-- Multer (File Upload)
-- bcrypt
+### 🏠 HomePage Erişim Sorunu - ÇÖZÜLDİ
+- ✅ **Guest kullanıcılar anasayfaya erişebilir**
+- ✅ **Otomatik login yönlendirmesi kaldırıldı**
+- ✅ **API hatalarından bağımsız çalışır**
+- ✅ **Vercel SPA routing optimize edildi**
 
-## ✨ Özellikler
+### 🛡️ Güvenlik ve UX İyileştirmeleri
+- ✅ **Role-based access control** (Guest/User/Admin)
+- ✅ **Smart error handling** (gereksiz toast'lar kaldırıldı)
+- ✅ **ProductCard login kontrolü** (guest'ler "Giriş Yap" butonu görür)
+- ✅ **Graceful API error recovery**
+- ✅ **Complete data isolation** (kullanıcılar arası veri karışması yok)
 
-- ✅ Kullanıcı kayıt/giriş sistemi
-- ✅ Admin paneli
-- ✅ Ürün yönetimi (CRUD)
-- ✅ Sepet sistemi
-- ✅ Sipariş yönetimi
-- ✅ Adres yönetimi
-- ✅ Responsive tasarım
-- ✅ Gerçek zamanlı stok takibi
+## Özellikler 🛍️
 
-## 🏃‍♂️ Yerel Kurulum
+- **👥 User Management**: Kayıt/Giriş, Profile, Addresses
+- **🛒 Shopping**: Products, Cart, Checkout, Orders
+- **🔧 Admin Panel**: Product/User/Order Management
+- **📱 Responsive Design**: Mobile-first approach
+- **🔐 Security**: JWT auth, data encryption, complete logout
 
-### Gereksinimler
-- Node.js (v18+)
-- MongoDB
+## Teknoloji Stack 🛠️
 
-### Backend Kurulumu
-```bash
-cd market-backend
-npm install
-npm run dev
-```
+**Frontend**: React 19, Vite, Redux Toolkit, Material-UI, React Router v7  
+**Backend**: Node.js, Express, MongoDB, JWT, bcrypt  
+**Deployment**: Vercel (Frontend) + Railway (Backend)
 
-### Frontend Kurulumu
-```bash
-cd market-front
-npm install
-npm run dev
-```
+## Test Kullanıcıları 👤
 
-## 🌐 Production Deployment
+Sistemi test etmek için:
+- **Admin**: `admin/admin123`
+- **User**: `user/user123`
+- **Guest**: Kayıt olmadan da test edebilirsiniz
 
-### Backend (Railway)
-1. Railway hesabı oluştur
-2. GitHub repo'nu bağla
-3. Environment variables:
-   - `MONGODB_URL`
-   - `JSON_KEY`
-   - `FRONTEND_URL`
-   - `NODE_ENV=production`
+---
 
-### Frontend (Vercel)
-1. Vercel hesabı oluştur
-2. GitHub repo'nu bağla
-3. Environment variables:
-   - `VITE_API_BASE_URL`
-
-## 📧 İletişim
-Geliştirici: [Berensaglam41]
+⭐ **Modern e-commerce solution with complete security!** ⭐
