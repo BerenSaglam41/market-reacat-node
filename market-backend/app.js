@@ -24,12 +24,35 @@ const app = express();
 // Connect to database first
 await connectDB();
 
-// CORS Configuration - Simple and compatible
+// CORS Configuration - Cookie destekli
 const corsOptions = {
-  origin: true, // Allow all origins for now
-  credentials: true,
+  origin: function (origin, callback) {
+    // Allowed origins for cookies
+    const allowedOrigins = [
+      'https://market-reacat-node.vercel.app',
+      'http://localhost:3000',
+      'https://localhost:3000'
+    ];
+    
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true, // 🔥 ÖNEMLİ - Cookie'ler için
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'Cookie',
+    'Set-Cookie',
+    'Access-Control-Allow-Credentials'
+  ],
+  exposedHeaders: ['Set-Cookie'],
   optionsSuccessStatus: 200
 };
 

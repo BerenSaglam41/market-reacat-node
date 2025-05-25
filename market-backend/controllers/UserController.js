@@ -106,8 +106,10 @@ export const login = async (req, res, next) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === 'production', // HTTPS'de secure
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // Cross-origin için
       maxAge: 1000 * 60 * 60 * 24, // 1 gün
+      domain: process.env.NODE_ENV === 'production' ? '.railway.app' : undefined
     });
 
     return res.json({ 
@@ -124,8 +126,9 @@ export const logout = async (req, res, next) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      sameSite: "strict",
-      secure: false
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      domain: process.env.NODE_ENV === 'production' ? '.railway.app' : undefined
     });
     res.json({ message: "Çıkış Yapıldı" });
   } catch (error) {
