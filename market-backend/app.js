@@ -16,9 +16,7 @@ const app = express();
 await connectDB();
 
 const corsConfig = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL] 
-    : true,
+  origin: true, // Geçici olarak tüm origin'lere izin
   credentials: true,
 };
 
