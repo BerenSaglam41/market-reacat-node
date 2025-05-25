@@ -9,14 +9,16 @@ import UserRouter from "./routes/UserRoutes.js";
 import CartRouter from "./routes/CartRoutes.js";
 import OrderRouter from "./routes/OrderRoutes.js";
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 const app = express();
 
 await connectDB();
 
 const corsConfig = {
-  origin: true,
+  origin: process.env.NODE_ENV === 'production' 
+    ? [process.env.FRONTEND_URL] 
+    : true,
   credentials: true,
 };
 
@@ -26,7 +28,8 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+  res.setHeader("Access-Control-Allow-Origin", frontendUrl);
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");

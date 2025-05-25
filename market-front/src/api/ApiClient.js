@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { toast } from 'react-toastify';
 import { router } from '../App';
-axios.defaults.baseURL = "http://localhost:5000/";
+const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(
@@ -43,7 +44,7 @@ axios.interceptors.response.use(
   );
   
   const instance = axios.create({
-    baseURL: "http://localhost:5000/api",
+    baseURL: `${baseURL}/api`,
   });
   
 const methods = {
