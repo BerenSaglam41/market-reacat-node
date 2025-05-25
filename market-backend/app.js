@@ -64,6 +64,7 @@ app.use((error, req, res, next) => {
 
 //SERVER
 app.listen(port, '0.0.0.0', () => {
-  console.log(`API http://0.0.0.0:${port} üzerinde çalışıyor.`);
-  console.log(`Railway Domain: https://market-reacat-node-production.up.railway.app`);
+  console.log(`🚀 API Server running on port: ${port}`);
+  console.log(`🌍 Railway Domain: https://market-reacat-node-production.up.railway.app`);
+  console.log(`📦 API Base URL: https://market-reacat-node-production.up.railway.app/api`);
 });
