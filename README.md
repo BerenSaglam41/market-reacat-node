@@ -45,3 +45,11 @@ Modern full-stack e-commerce uygulaması. React + Node.js + MongoDB ile gelişti
 ---
 
 ⭐ **Modern e-commerce solution with complete security!** ⭐
+
+## 👨‍💻 Geliştirici
+
+Merhaba! Ben **Mustafa Beren Sağlam**, bu projeyi geliştiren kişiyim. Modern web teknolojileri kullanarak güvenli ve kullanıcı dostu e-commerce çözümleri oluşturmayı seviyorum.
+
+Eğer bu proje işinize yaradıysa veya beğendiyseniz, lütfen ⭐ **yıldız** vermeyi unutmayın! Bu beni çok mutlu eder ve daha fazla proje geliştirmek için motive olurım.
+
+💙 **Teşekkürler ve iyi kodlamalar!**
