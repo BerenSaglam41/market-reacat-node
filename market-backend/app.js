@@ -13,6 +13,8 @@ const port = process.env.PORT || 5000;
 
 console.log('🚀 Port:', port);
 console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+console.log('🔗 FRONTEND_URL:', process.env.FRONTEND_URL);
+console.log('🚫 CORS Origins:', corsConfig.origin);
 
 const app = express();
 
@@ -23,9 +25,12 @@ const corsConfig = {
     process.env.FRONTEND_URL,
     'http://localhost:3000',
     'https://localhost:3000',
+    'https://market-reacat-node.vercel.app',
     /\.vercel\.app$/
-  ],
+  ].filter(Boolean), // undefined values'ları temizle
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cookieParser());
