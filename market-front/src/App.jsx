@@ -24,6 +24,7 @@ import DebugPage from './pages/DebugPage'
 import ApiTestPage from './pages/ApiTestPage'
 import Products from './pages/Products'
 import DataInspector from './pages/DataInspector'
+import NavigationTracker from './pages/NavigationTracker'
 
 // Simple Error Fallback Component (react-error-boundary olmadan)
 function ErrorFallback({error, resetErrorBoundary}) {
@@ -120,6 +121,10 @@ export const router = createBrowserRouter(
         {
           path: "data-inspector",
           element: <DataInspector />
+        },
+        {
+          path: "nav-tracker",
+          element: <NavigationTracker />
         },
         {
           path: "errors/not-found",
