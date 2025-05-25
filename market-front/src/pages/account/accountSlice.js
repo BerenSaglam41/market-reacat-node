@@ -56,10 +56,6 @@ export const getUser = createAsyncThunk(
                 message: error.response?.data?.message || error.message
             });
         }
-    },{
-        condition : () => {
-            if(!localStorage.getItem("user")) return false;
-        },
     }
 );
 

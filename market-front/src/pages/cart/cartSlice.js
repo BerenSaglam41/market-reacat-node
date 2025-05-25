@@ -18,13 +18,7 @@ export const fetchCart = createAsyncThunk("cart/fetch", async (_, thunkAPI) => {
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
-},
-{
-  condition : () => {
-      if(!localStorage.getItem("user")) return false;
-  },
-}
-);
+});
 
 export const addToCart = createAsyncThunk("cart/add", async (productId, thunkAPI) => {
   try {
