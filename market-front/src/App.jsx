@@ -21,6 +21,7 @@ import OrderPage from './pages/OrderPage'
 import { getUser } from './pages/account/accountSlice'
 import AccountPage from './compoments/AccountPage'
 import { ErrorBoundary } from 'react-error-boundary'
+import DebugPage from './pages/DebugPage'
 
 // Error Fallback Component
 function ErrorFallback({error, resetErrorBoundary}) {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter(
             { path: "order", element: <OrderPage /> },
             { path: "my-account", element: <AccountPage /> }
           ]
+        },
+        {
+          path: "debug",
+          element: <DebugPage />
         },
         {
           path: "errors/not-found",

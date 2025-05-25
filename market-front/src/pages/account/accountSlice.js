@@ -176,13 +176,19 @@ export const accountSlice = createSlice({
                 state.status = "idle";
             })
 
+            .addCase(getUser.pending, (state) => {
+                state.status = "pending";
+            })
             .addCase(getUser.fulfilled, (state, action) => {
                 state.user = action.payload;
+                state.status = "idle";
             })
-            .addCase(getUser.rejected, (state) => {
+            .addCase(getUser.rejected, (state, action) => {
                 state.user = null;
+                state.status = "idle";
+                // Sadece localStorage'ı temizle, otomatik redirect yapma
                 localStorage.removeItem("user");
-                router.navigate('/login');
+                console.log('⚠️ getUser rejected:', action.payload);
             })
             .addCase(logoutThunk.pending, (state) => {
                 state.status = "pending";
