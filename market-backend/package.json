@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js",
-    "build": "npm ci --only=production",
-    "postinstall": "echo 'Installation complete'"
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
