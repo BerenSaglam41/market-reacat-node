@@ -30,17 +30,28 @@ const corsOptions = {
     // Allowed origins for cookies
     const allowedOrigins = [
       'https://market-reacat-node.vercel.app',
+      'https://market-react-node.vercel.app', // Yeni Vercel domain
+      'https://marketreactnode.vercel.app',   // Alternatif domain
       'http://localhost:3000',
-      'https://localhost:3000'
+      'http://localhost:5173', // Vite default port
+      'http://localhost:4173', // Vite preview port
+      'https://localhost:3000',
+      'https://localhost:5173'
     ];
     
     // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true);
     
+    // Development ortamında tüm localhost'lara izin ver
+    if (process.env.NODE_ENV === 'development' && origin?.includes('localhost')) {
+      return callback(null, true);
+    }
+    
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     
+    console.log('🚫 CORS Blocked origin:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true, // 🔥 ÖNEMLİ - Cookie'ler için
@@ -50,10 +61,12 @@ const corsOptions = {
     'Authorization', 
     'Cookie',
     'Set-Cookie',
-    'Access-Control-Allow-Credentials'
+    'Access-Control-Allow-Credentials',
+    'X-Requested-With'
   ],
   exposedHeaders: ['Set-Cookie'],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 };
 
 // Apply middlewares in correct order
@@ -64,11 +77,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use('/uploads', express.static('uploads'));
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Root route for testing
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Market Backend API is running! 🚀',
     version: 'Express 4.x + Clean Setup',
+    environment: process.env.NODE_ENV,
     routes: {
       products: '/api/products',
       users: '/user',
@@ -76,7 +99,16 @@ app.get('/', (req, res) => {
       orders: '/order',
       admin: '/admin'
     },
-    status: 'Backend çalışıyor ve veritabanı bağlı!'
+    status: 'Backend çalışıyor ve veritabanı bağlı!',
+    cors: {
+      allowedOrigins: [
+        'https://market-reacat-node.vercel.app',
+        'https://market-react-node.vercel.app',
+        'https://marketreactnode.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:5173'
+      ]
+    }
   });
 });
 
@@ -89,7 +121,8 @@ app.use('/api/cart', CartRouter);
 
 // 404 Handler
 app.use((req, res, next) => {
-  const error = new Error("Route not found.");
+  console.log('🚫 404 - Route not found:', req.method, req.originalUrl);
+  const error = new Error(`Route not found: ${req.method} ${req.originalUrl}`);
   error.status = 404;
   next(error); 
 });
