@@ -62,19 +62,36 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-export const getMe = async (req,res,next) => {
-    const token = req.cookies.token;
-    if(!token) return res.status(403).json({message : "Token Eksik"});
+// Middleware olarak kullanılacak
+export const getUserMiddleware = async (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(403).json({ message: "Token Eksik" });
 
-    try{
-        const decoded = jwt.verify(token,process.env.JSON_KEY);
-        req.user = decoded;
-        next();
-    }
-    catch(err){
-        next(err);
-    }
-}
+  try {
+    const decoded = jwt.verify(token, process.env.JSON_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Direct endpoint olarak kullanılacak  
+export const getMe = async (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Token eksik" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JSON_KEY);
+    const user = await User.findById(decoded.id).select("username role email phone");
+
+    if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(401).json({ message: "Token geçersiz", expired: true });
+  }
+};
 
 export const getUser = async (req, res) => {
   const token = req.cookies.token;
