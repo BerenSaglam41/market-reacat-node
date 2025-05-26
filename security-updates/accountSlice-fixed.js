@@ -67,22 +67,52 @@ export const loginUser = createAsyncThunk(
     }
 );
 
-// REGISTER
+// REGISTER - Geliştirilmiş hata yönetimi
 export const registerUser = createAsyncThunk(
     "account/register",
     async (data, thunkAPI) => {
       try {
         const result = await requests.account.register(data);
-        toast.success("Kayıt başarılı!");
+        
+        toast.success("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        
+        // Register sayfasından login sayfasına yönlendir
+        setTimeout(() => {
+            router.navigate('/login');
+        }, 2000);
+        
         return result;
       } catch (error) {        
         const errorData = error.data?.errors;
+        
         if (errorData) {
-            Object.values(errorData).forEach(msg => toast.error(msg));
+            // Çoklu hata mesajları
+            Object.values(errorData).forEach(msg => {
+                toast.error(msg, {
+                    position: "top-right",
+                    autoClose: 4000,
+                });
+            });
+        } else {
+            // Tek hata mesajı
+            const errorMessage = error.data?.message || error.message || "Kayıt başarısız!";
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         }
-          else {
-          toast.error(errorData?.message || "Kayıt başarısız!");
-        }
+        
         return thunkAPI.rejectWithValue(errorData); 
       }
     }
@@ -117,16 +147,24 @@ export const updateUser = createAsyncThunk(
     'account/updateUser',
     async (userData, thunkAPI) => {
       try {        
-        const response = await requests.account.updateUser(userData); // PUT /user/update
-        console.log(response);
+        const response = await requests.account.updateUser(userData);
+        
+        toast.success("Profil bilgileriniz güncellendi!", {
+            position: "top-right",
+            autoClose: 3000,
+        });
         
         return response.data;
       } catch (error) {
+        toast.error("Profil güncellenirken hata oluştu!", {
+            position: "top-right",
+            autoClose: 4000,
+        });
+        
         return thunkAPI.rejectWithValue({ message: error.message });
       }
     }
   );
-  
 
 // LOGOUT (Thunk ile async)
 export const logoutThunk = createAsyncThunk(
@@ -170,12 +208,20 @@ export const addAddress = createAsyncThunk(
     'account/addAddress',
     async (addressData, thunkAPI) => {
         try {
-            console.log(addressData);
             const response = await requests.account.addAddress(addressData); 
-            console.log(response);
             
-            return response.data; // Yeni adresi döndür
+            toast.success("Adres başarıyla eklendi!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            
+            return response.data;
         } catch (error) {
+            toast.error("Adres eklenirken hata oluştu!", {
+                position: "top-right",
+                autoClose: 4000,
+            });
+            
             return thunkAPI.rejectWithValue({ message: error.message });
         }
     }
@@ -186,24 +232,44 @@ export const updateAddress = createAsyncThunk(
     'account/updateAddress',
     async ({ addressId, addressData }, thunkAPI) => {
       try {
-        // Sadece id URL'de, data body'de
         const response = await requests.account.updateAddress(addressId, addressData);
+        
+        toast.success("Adres başarıyla güncellendi!", {
+            position: "top-right",
+            autoClose: 3000,
+        });
+        
         return response;
       } catch (error) {
+        toast.error("Adres güncellenirken hata oluştu!", {
+            position: "top-right",
+            autoClose: 4000,
+        });
+        
         return thunkAPI.rejectWithValue({ message: error.message });
       }
     }
   );
-  
 
 // Adres silme işlemi
 export const deleteAddress = createAsyncThunk(
     'account/deleteAddress',
     async (addressId, thunkAPI) => {
         try {
-            await requests.account.deleteAdress(addressId); // Adres silme
-            return addressId; // Silinen adresin id'si
+            await requests.account.deleteAdress(addressId);
+            
+            toast.success("Adres başarıyla silindi!", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            
+            return addressId;
         } catch (error) {
+            toast.error("Adres silinirken hata oluştu!", {
+                position: "top-right",
+                autoClose: 4000,
+            });
+            
             return thunkAPI.rejectWithValue({ message: error.message });
         }
     }
@@ -214,7 +280,7 @@ export const getAddresses = createAsyncThunk(
     async (_, thunkAPI) => {
       try {
         const response = await requests.account.getAddressses();         
-        return response; // adres listesini döndür
+        return response;
       } catch (error) {
         return thunkAPI.rejectWithValue({ message: error.message });
       }
@@ -271,7 +337,6 @@ export const accountSlice = createSlice({
             .addCase(getUser.rejected, (state, action) => {
                 state.user = null;
                 state.status = "idle";
-                // Sadece localStorage'ı temizle, otomatik redirect yapma
                 localStorage.removeItem("user");
                 console.log('⚠️ getUser rejected:', action.payload);
             })
@@ -281,8 +346,17 @@ export const accountSlice = createSlice({
             .addCase(logoutThunk.fulfilled, (state) => {
                 state.status = "idle";
                 state.user = null;
+                
                 // Success toast göster
-                toast.success("Başarıyla çıkış yaptınız");
+                toast.success("Başarıyla çıkış yaptınız", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                
                 // Ana sayfaya yönlendir
                 setTimeout(() => {
                     router.navigate('/', { replace: true });
@@ -317,7 +391,6 @@ export const accountSlice = createSlice({
             .addCase(updateUser.fulfilled, (state, action) => {
                 state.user = action.payload;
               })
-              
     }
 });
 

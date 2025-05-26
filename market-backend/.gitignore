@@ -1,6 +1,55 @@
+# Environment variables - KRİTİK!
 .env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+.env.backup
+
+# Dependencies
 node_modules/
-package-lock.json
-.DS_Store
-logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Uploads
+uploads/
+public/uploads/
+
+# Build files
+dist/
+build/
+
+# Editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Database files
+*.db
+*.sqlite
+
+# Temporary files
+*.tmp
+temp/
+
+# Config files
+config.json
+secrets.json
